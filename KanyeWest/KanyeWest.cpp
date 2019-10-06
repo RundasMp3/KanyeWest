@@ -3,6 +3,9 @@
 
 #include "pch.h"
 #include <stdio.h>
+#include <stdlib.h>
+
+#pragma region defines
 
 #define EFE 0
 #define RDI
@@ -77,10 +80,28 @@
 #define JMEZ
 #define JLZ
 #define JLEZ
+#pragma endregion
+
 
 int main(int argc)
 {
-	str
+	FILE *fp;
+	char buffer[131081];
+	char *sc;
+	char *sd;
+	fp = fopen("file.txt", "w+");
+	char i = fread(buffer, 1, 11, fp);
+	if (!verificarHeader(buffer))
+	{
+		printf("Howow! Bwad headew smh");
+	}
+	int TSC = ConvertirShortInt(&buffer[7]);
+	int TSD = ConvertirShortInt(&buffer[9]);
+	sc = (char*)malloc(TSC);
+	sd = (char*)malloc(TSD);
+	i = fread(sc, 1, TSC, fp);
+	int TOS = -1;
+	int PC = 0;
 	if (!loadFile())
 	{
 		running();
@@ -107,6 +128,11 @@ struct st_stack {
 		char caracter;
 	}dato;
 };
+
+int ConvertirShortInt(char *a)
+{
+	return atoi(a);//	No convierte short a int, sino que lo trata de leer char como int desde el principio, checa si sirve despues
+}
 
 bool loadFile()
 {
