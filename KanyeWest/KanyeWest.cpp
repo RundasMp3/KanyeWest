@@ -3,10 +3,94 @@
 
 #include "pch.h"
 #include <stdio.h>
-int main()
-{
 
+#define EFE 0
+#define RDI
+#define RDD
+#define RDS
+#define RDB
+#define RDC
+#define RDIV
+#define RDDV
+#define RDSV
+#define RDBV
+#define RDCV
+#define PRTM
+#define PRTI
+#define PRTD
+#define PRTS
+#define PRTB
+#define PRTC
+#define PRTIV
+#define PRTDV
+#define PRTSV
+#define PRTBV
+#define PRTCV
+#define PUSHI
+#define PUSHD
+#define PUSHS
+#define PUSHB
+#define PUSHC
+#define PUSHKI
+#define PUSHKD
+#define PUSHKS
+#define PUSHKB
+#define PUSHKC
+#define POPI
+#define POPD
+#define POPS
+#define POPB
+#define POPC
+#define POPIV
+#define POPDV
+#define POPSV
+#define POPBV
+#define POPCV
+#define SUM
+#define SUB
+#define MULT
+#define DIV
+#define MOD
+#define AND
+#define OR
+#define XOR
+#define MAX
+#define MIN
+#define INCI
+#define INCD
+#define INCC
+#define DECI
+#define DECD
+#define DECC
+#define BRANCH
+#define CMPLE
+#define CMPL
+#define CMPGE
+#define CMPG
+#define CMPE
+#define CMPNE
+#define BRNCHC
+#define JMPT
+#define JEZ
+#define JNZ
+#define JMZ
+#define JMEZ
+#define JLZ
+#define JLEZ
+
+int main(int argc)
+{
+	str
+	if (!loadFile())
+	{
+		running();
+	}
+	else
+	{
+
+	}
 }
+
 //11 bytes header
 #define MAX_STACK 100
 short int TOS;
@@ -24,6 +108,10 @@ struct st_stack {
 	}dato;
 };
 
+bool loadFile()
+{
+
+}
 
 int verificarHeader(char *s)
 {
@@ -39,6 +127,21 @@ int compareTo(const char *a, char *b)
 	}
 	return 1;
 }
+
+void running()
+{
+	while (1 != 0)//SegmentoDeCodigo[Puntero]!=Null o 0 o final) <---Fixfix
+	{
+		switch (EFE)//SegmentoDeCodigo[Puntero])
+		{
+		case EFE:
+			break;
+		}
+		case 
+	}
+}
+
+
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
 // Debug program: F5 or Debug > Start Debugging menu
 
