@@ -97,23 +97,12 @@ int main(int argc)
 	i = fread(sc, 1, TSC, fp);
 	int TOS = -1;
 	int PC = 0;
-	while (!sc[pc])//SegmentoDeCodigo[Puntero]!=Null o 0 o final) <---Fixfix
-	{
-		switch (*(sc+pc))//SegmentoDeCodigo[Puntero])
-		{
-		case RDI:
-			scanf("@d", &x);
-			break;
-		case EFE:
-			break;
-		default:
-			printf("Howow! incowect code unu");
-			break;
-		}
-	}
+	
+	
+
 	if (!loadFile())
 	{
-		running();
+		running(sc, pc);
 	}
 	else
 	{
@@ -163,16 +152,152 @@ int compareTo(const char *a, char *b)
 	return 1;
 }
 
-void running()
+void running(char* sc, int pc)
 {
-	while (1 != 0)//SegmentoDeCodigo[Puntero]!=Null o 0 o final) <---Fixfix
+	while (!sc[pc])//SegmentoDeCodigo[Puntero]!=Null o 0 o final) <---Fixfix
 	{
-		switch (EFE)//SegmentoDeCodigo[Puntero])
+		switch (*(sc + pc))//SegmentoDeCodigo[Puntero])
 		{
 		case EFE:
 			break;
+		case RDI:
+			scanf("@d", &x);
+			break;
+		case RDD:
+			break;
+		case RDS:
+			break;
+		case RDB:
+			break;
+		case RDC:
+			break;
+		case RDIV:
+			break;
+		case RDDV:
+			break;
+		case RDSV:
+			break;
+		case RDBV:
+			break;
+		case RDCV:
+			break;
+		case PRTM:
+			break;
+		case PRTI:
+			break;
+		case PRTD:
+			break;
+		case PRTS:
+			break;
+		case PRTB:
+			break;
+		case PRTC:
+			break;
+		case PRTIV:
+			break;
+		case PRTDV:
+			break;
+		case PRTSV:
+			break;
+		case PRTBV:
+			break;
+		case PRTCV:
+			break;
+		case PUSHI:
+			break;
+		case PUSHD:
+			break;
+		case PUSHS:
+			break;
+		case PUSHB:
+			break;
+		case PUSHC:
+			break;
+		case PUSHKI:
+			break;
+		case PUSHKD:
+			break;
+		case PUSHKS:
+			break;
+		case PUSHKB:
+			break;
+		case PUSHKC:
+			break;
+		case POPI:
+			break;
+		case POPD:
+			break;
+		case POPS:
+			break;
+		case POPB:
+			break;
+		case POPC:
+			break;
+		case POPIV:
+			break;
+		case POPDV:
+			break;
+		case POPSV:
+			break;
+		case POPBV:
+			break;
+		case POPCV:
+			break;
+		case SUM:
+			break;
+		case SUB:
+			break;
+		case MULT:
+			break;
+		case DIV:
+			break;
+		case MOD:
+			break;
+		case AND:
+			break;
+		case OR:
+			break;
+		case XOR:
+			break;
+		case MAX:
+			break;
+		case MIN:
+			break;
+		case INCI:
+			break;
+		case INCD:
+			break;
+		case INCC:
+			break;
+		case DECI:
+			break;
+		case DECD:
+			break;
+		case DECC:
+			break;
+		case BRANCH:
+			break;
+		case CMPLE:
+			break;
+		case CMPL:
+			break;
+		case CMPGE:
+			break;
+		case CMPG:
+			break;
+		case CMPE:
+			break;
+		case CMPNE:
+			break;
+		case 65:
+			break;
+		case BRNCHC:
+			break;
+
+		default:
+			printf("Howow! incowect code unu");
+			break;
 		}
-		case
 	}
 }
 
