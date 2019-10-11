@@ -84,7 +84,11 @@ int main(int argc)
 	char *sc;
 	char *sd;
 	int pc = 0;//deberia comenzar en 11, creo
-	fp = fopen("file.txt", "w+");
+	int verificarHeader(char*);
+	int ConvertirShortInt(char*);
+	bool loadFile();
+	void running(char*, int);
+	fp = fopen("file.ye", "rb");
 	char i = fread(buffer, 1, 11, fp);
 	if (!verificarHeader(buffer))
 	{
@@ -109,13 +113,6 @@ int main(int argc)
 
 	}
 }
-
-//11 bytes header
-#define MAX_STACK 100
-short int TOS;
-st_stack STACK[MAX_STACK];
-
-
 struct st_stack {
 	char tipo;
 	union {
@@ -127,6 +124,13 @@ struct st_stack {
 	}dato;
 };
 
+//11 bytes header
+#define MAX_STACK 100
+short int TOS;
+st_stack STACK[MAX_STACK];
+
+
+
 int ConvertirShortInt(char *a)
 {
 	return atoi(a);//	No convierte short a int, sino que lo trata de leer char como int desde el principio, checa si sirve despues
@@ -134,11 +138,12 @@ int ConvertirShortInt(char *a)
 
 bool loadFile()
 {
-
+	return true;
 }
 
 int verificarHeader(char *s)
 {
+	int compareTo(const char*, char*);
 	return compareTo("ICC2020", s);
 }
 
@@ -161,7 +166,7 @@ void running(char* sc, int pc)
 		case EFE:
 			break;
 		case RDI:
-			scanf("@d", &x);
+			//scanf("@d", &x);
 			break;
 		case RDD:
 			break;
