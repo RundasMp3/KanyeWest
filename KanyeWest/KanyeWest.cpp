@@ -85,11 +85,12 @@ void running(char* sc, int pc);
 int main(int argc)
 {
 	FILE *filepointer;
+	errno_t err;
 	char buffer[131081];
 	char *sc;
 	char *sd;
 	int pc = 0;//deberia comenzar en 11, creo
-	fopen_s( &filepointer, "C:\\Users\rundas\test.ye", "rb");
+	err = fopen_s( &filepointer, "C:\\test.ye", "r");
 
 	size_t i = fread(buffer, 1, 11, filepointer);
 	if (!verificarHeader(buffer))
