@@ -76,16 +76,22 @@
 #define BRNCHC 66
 #pragma endregion
 
+int ConvertirShortInt(char *a);
+bool loadFile();
+int verificarHeader(char *s);
+int compareTo(const char *a, char *b);
+void running(char* sc, int pc);
 
 int main(int argc)
 {
-	FILE *fp;
+	FILE *filepointer;
 	char buffer[131081];
 	char *sc;
 	char *sd;
 	int pc = 0;//deberia comenzar en 11, creo
-	fp = fopen("file.txt", "w+");
-	char i = fread(buffer, 1, 11, fp);
+	fopen_s( &filepointer, "C:\\Users\rundas\test.ye", "rb");
+
+	size_t i = fread(buffer, 1, 11, filepointer);
 	if (!verificarHeader(buffer))
 	{
 		printf("Howow! Bwad headew smh");
@@ -94,7 +100,7 @@ int main(int argc)
 	int TSD = ConvertirShortInt(&buffer[9]);
 	sc = (char*)malloc(TSC);
 	sd = (char*)malloc(TSD);
-	i = fread(sc, 1, TSC, fp);
+	i = fread(sc, 1, TSC, filepointer);
 	int TOS = -1;
 	int PC = 0;
 	
@@ -111,9 +117,8 @@ int main(int argc)
 }
 
 //11 bytes header
-#define MAX_STACK 100
-short int TOS;
-st_stack STACK[MAX_STACK];
+
+
 
 
 struct st_stack {
@@ -127,6 +132,11 @@ struct st_stack {
 	}dato;
 };
 
+#define MAX_STACK 100
+short int TOS;
+st_stack STACK[MAX_STACK];
+
+
 int ConvertirShortInt(char *a)
 {
 	return atoi(a);//	No convierte short a int, sino que lo trata de leer char como int desde el principio, checa si sirve despues
@@ -134,14 +144,13 @@ int ConvertirShortInt(char *a)
 
 bool loadFile()
 {
-
+	return true;
 }
 
 int verificarHeader(char *s)
 {
 	return compareTo("ICC2020", s);
 }
-
 int compareTo(const char *a, char *b)
 {
 	while (*a)
@@ -152,6 +161,7 @@ int compareTo(const char *a, char *b)
 	return 1;
 }
 
+
 void running(char* sc, int pc)
 {
 	while (!sc[pc])//SegmentoDeCodigo[Puntero]!=Null o 0 o final) <---Fixfix
@@ -161,7 +171,7 @@ void running(char* sc, int pc)
 		case EFE:
 			break;
 		case RDI:
-			scanf("@d", &x);
+			//scanf("@d", &x);
 			break;
 		case RDD:
 			break;
@@ -312,3 +322,8 @@ void running(char* sc, int pc)
 //   4. Use the Error List window to view errors
 //   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
 //   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
+
+int ConvertirShortInt(char)
+{
+	return 0;
+}
