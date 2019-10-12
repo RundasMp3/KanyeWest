@@ -88,14 +88,14 @@ int main(int argc)
 	int ConvertirShortInt(char*);
 	bool loadFile();
 	void running(char*, int);
-	fp = fopen("file.ye", "rb");
+	fp = fopen("test.ye", "rb");
 	char i = fread(buffer, 1, 11, fp);
 	if (!verificarHeader(buffer))
 	{
 		printf("Howow! Bwad headew smh");
 	}
-	int TSC = ConvertirShortInt(&buffer[7]);
-	int TSD = ConvertirShortInt(&buffer[9]);
+	int TSC =(int)((buffer[7] << 8) | buffer[8]);
+	int TSD = (int)((buffer[9] << 8) | buffer[10]);
 	sc = (char*)malloc(TSC);
 	sd = (char*)malloc(TSD);
 	i = fread(sc, 1, TSC, fp);
