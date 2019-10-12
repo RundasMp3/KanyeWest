@@ -90,13 +90,19 @@ int main(int argc)
 	char *sc;
 	char *sd;
 	int pc = 0;//deberia comenzar en 11, creo
-	err = fopen_s( &filepointer, "C:\\test.ye", "r");
+	err = fopen_s( &filepointer, "C:\\test.ye", "rb");
 
-	size_t i = fread(buffer, 1, 11, filepointer);
+	char i = fread(buffer, 1, 11, filepointer);
+
 	if (!verificarHeader(buffer))
 	{
 		printf("Howow! Bwad headew smh");
 	}
+	else
+	{
+		printf("Gwood!");
+	}
+
 	int TSC = ConvertirShortInt(&buffer[7]);
 	int TSD = ConvertirShortInt(&buffer[9]);
 	sc = (char*)malloc(TSC);
@@ -109,7 +115,10 @@ int main(int argc)
 
 	if (!loadFile())
 	{
-		running(sc, pc);
+	
+		
+
+		//running(sc, pc);
 	}
 	else
 	{
@@ -152,6 +161,8 @@ int verificarHeader(char *s)
 {
 	return compareTo("ICC2020", s);
 }
+
+
 int compareTo(const char *a, char *b)
 {
 	while (*a)
@@ -323,8 +334,3 @@ void running(char* sc, int pc)
 //   4. Use the Error List window to view errors
 //   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
 //   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
-
-int ConvertirShortInt(char)
-{
-	return 0;
-}
