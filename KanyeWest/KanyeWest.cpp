@@ -76,6 +76,10 @@
 #define BRNCHC 66
 #pragma endregion
 
+int verificarHeader(char*);
+int ConvertirShortInt(char*);
+bool loadFile();
+void running(char*, int);
 
 int main(int argc)
 {
@@ -84,15 +88,18 @@ int main(int argc)
 	char *sc;
 	char *sd;
 	int pc = 0;//deberia comenzar en 11, creo
-	int verificarHeader(char*);
-	int ConvertirShortInt(char*);
-	bool loadFile();
-	void running(char*, int);
-	fp = fopen("test.ye", "rb");
+	errno_t err;
+
+	err = fopen_s(&fp, "test.ye", "rb");
+
 	char i = fread(buffer, 1, 11, fp);
 	if (!verificarHeader(buffer))
 	{
 		printf("Howow! Bwad headew smh");
+	}
+	else
+	{
+		printf("Gwood!");
 	}
 	int TSC =(int)((buffer[7] << 8) | buffer[8]);
 	int TSD = (int)((buffer[9] << 8) | buffer[10]);
