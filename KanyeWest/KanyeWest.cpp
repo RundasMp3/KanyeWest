@@ -84,7 +84,7 @@ void running(char* sc, int pc);
 
 int main(int argc)
 {
-	FILE *filepointer;
+	FILE *filepointer; //pewpewpew
 	errno_t err;
 	char buffer[131081];
 	char *sc;
