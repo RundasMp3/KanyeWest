@@ -87,24 +87,117 @@ bool loadFile();
 void running(char*, int);
 int compareTo(const char*, char*);
 
-struct st_stack {
-	//char tipo;
-	/*union {
+
+
+
+
+#pragma region stwack uwu
+struct st_node {
+	char tipo;
+	union {
 		short int dir;
 		int entero;
 		double doble;
 		char* apuntador;
 		char caracter;
-	}dato;*/
-	union {
-		uint8_t id;
-		int Int32;
-		unsigned char bytes[4];
-	}u;
+	}dato;
+	int* dir;
+
 };
 
+struct st_stack {
+	int capacity;
+	st_node* array;
+	int top;
+};
 
+struct st_stack* createStack(unsigned capacity)
+{
+	struct st_stack* stack = (struct st_stack*)malloc(sizeof(struct st_stack));
+	stack->capacity = capacity;
+	stack->top = -1;
+	stack->array = (st_node*)malloc(stack->capacity * sizeof(st_node));
+	return stack;
+}
 
+int isFull(struct st_stack* stack)
+{
+	return stack->top == stack->capacity - 1;
+}
+
+// Stack is empty when top is equal to -1 
+int isEmpty(struct st_stack* stack)
+{
+	return stack->top == -1;
+}
+
+void push(struct st_stack* stack, st_node item)
+{
+	if (isFull(stack))
+		return;
+	stack->array[++stack->top] = item;
+
+	//printf("%d pushed to stack\n", item);
+}
+
+st_node pop(struct st_stack* stack)
+{
+	st_node nulo;
+	nulo.tipo = 'n';
+
+	if (isEmpty(stack))
+		return nulo;
+	return stack->array[stack->top--];
+}
+
+st_node top(struct st_stack* stack) {
+	st_node nulo;
+	nulo.tipo = 'n';
+
+	if (isEmpty(stack))
+		return nulo;
+	return stack->array[stack->top];
+}
+
+void printNodeContent(st_node item)
+{
+	switch (item.tipo)
+	{
+	case 'i':
+		printf("%d pushed to stack\n", item.dato.entero);
+		break;
+	case 'c':
+		printf("%c pushed to stack\n", item.dato.caracter);
+		break;
+	case 'd':
+		printf("%f pushed to stack\n", item.dato.doble);
+		break;
+	case 's':
+		printf("%d pushed to stack\n", item.dato.dir);
+		break;
+	}
+}
+
+int Test() {
+	struct st_stack* stack = createStack(100);
+	st_node node;
+
+	node.tipo = 'i';
+	node.dato.entero = 10;
+	push(stack, node);
+
+	node.tipo = 'c';
+	node.dato.caracter = 'c';
+	push(stack, node);
+	node.tipo = 'd';
+	node.dato.doble = 10.3;
+	push(stack, node);
+
+	//printf("%d popped from stack\n", pop(stack).dato.doble);
+
+	return 0;
+}
+#pragma endregion
 
 int main(int argc)
 {
@@ -113,7 +206,7 @@ int main(int argc)
 	char *sc;
 	char *sd;
 	//errno_t err;
-	st_stack stack; //struct st_stack stack;
+	st_node stack; //struct st_stack stack;
 	long filend;
 
 	fopen_s(&fp, "C:\\test2.ye", "rb");
@@ -159,12 +252,12 @@ int main(int argc)
 
 	for (int i = 0; i < filend; ++i)
 	{
-		fread(&stack, sizeof(struct st_stack), 1, fp);
-		printf("Id:  %d\tInt:  %d\tbytes:  %d\n", stack.u.id, stack.u.Int32, stack.u.bytes);//"tipo:  %d\tapuntador:  %d\tcaracter:  %d\tdireccion: %d\tdoble: %d\tentero: %d\n", stack.tipo, stack.dato.apuntador, stack.dato.caracter, stack.dato.dir, stack.dato.doble, stack.dato.entero);
-		printf("bytes:  %d\n", stack.u.bytes[0]);
-		printf("bytes:  %d\n", stack.u.bytes[1]);
-		printf("bytes:  %d\n", stack.u.bytes[2]);
-		printf("bytes:  %d\n", stack.u.bytes[3]);
+		fread(&stack, sizeof(struct st_node), 1, fp);
+		//printf("Id:  %d\tInt:  %d\tbytes:  %d\n", stack.u.id, stack.u.Int32, stack.u.bytes);//"tipo:  %d\tapuntador:  %d\tcaracter:  %d\tdireccion: %d\tdoble: %d\tentero: %d\n", stack.tipo, stack.dato.apuntador, stack.dato.caracter, stack.dato.dir, stack.dato.doble, stack.dato.entero);
+		//printf("bytes:  %d\n", stack.u.bytes[0]);
+		//printf("bytes:  %d\n", stack.u.bytes[1]);
+		//printf("bytes:  %d\n", stack.u.bytes[2]);
+		//printf("bytes:  %d\n", stack.u.bytes[3]);
 	}
 
 	if (loadFile())
@@ -186,7 +279,7 @@ int main(int argc)
 
 #define MAX_STACK 100
 short int TOS;
-st_stack STACK[MAX_STACK];
+st_node STACK[MAX_STACK];
 
 
 int ConvertirShortInt(char *a)
@@ -432,6 +525,228 @@ void running(char* sc, int pc)
 			pc++;
 			break;
 		}
+	}
+}
+
+void running(char* sc, int pc)
+{
+	printf("Enhorabuena!\n");
+	if (sc[pc] != 0)
+	{
+		switch (sc[pc])//*(sc + pc))//SegmentoDeCodigo[Puntero])
+		{
+			case EFE:
+				break;
+			case RDI:
+				
+				break;
+			case RDD:
+				
+				break;
+			case RDS:
+				
+				break;
+			case RDB:
+				
+				break;
+			case RDC:
+				
+				break;
+			case RDIV:
+				
+				break;
+			case RDDV:
+				
+				break;
+			case RDSV:
+				
+				break;
+			case RDBV:
+				
+				break;
+			case RDCV:
+				
+				break;
+			case PRTM:
+				
+				break;
+			case PRTI:
+				
+				break;
+			case PRTD:
+				
+				break;
+			case PRTS:
+				
+				break;
+			case PRTB:
+				
+				break;
+			case PRTC:
+				
+				break;
+			case PRTIV:
+				
+				break;
+			case PRTDV:
+				
+				break;
+			case PRTSV:
+				
+				break;
+			case PRTBV:
+				
+				break;
+			case PRTCV:
+				
+				break;
+			case PUSHI:
+				
+				break;
+			case PUSHD:
+				
+				break;
+			case PUSHS:
+				
+				break;
+			case PUSHB:
+				printf("PUSHB\n");
+				
+				break;
+			case PUSHC:
+				
+				break;
+			case PUSHKI:
+				
+				break;
+			case PUSHKD:
+				
+				break;
+			case PUSHKS:
+				
+				break;
+			case PUSHKB:
+				
+				break;
+			case PUSHKC:
+				
+				break;
+			case POPI:
+				
+				break;
+			case POPD:
+				
+				break;
+			case POPS:
+				
+				break;
+			case POPB:
+				
+				break;
+			case POPC:
+				
+				break;
+			case POPIV:
+				
+				break;
+			case POPDV:
+				
+				break;
+			case POPSV:
+				
+				break;
+			case POPBV:
+				
+				break;
+			case POPCV:
+				
+				break;
+			case SUM:
+				
+				break;
+			case SUB:
+				
+				break;
+			case MULT:
+				
+				break;
+			case DIV:
+				
+				break;
+			case MOD:
+				
+				break;
+			case AND:
+				
+				break;
+			case OR:
+				
+				break;
+			case XOR:
+				
+				break;
+			case MAX:
+				
+				break;
+			case MIN:
+				
+				break;
+			case INCI:
+				
+				break;
+			case INCD:
+				
+				break;
+			case INCC:
+				
+				break;
+			case DECI:
+				
+				break;
+			case DECD:
+				
+				break;
+			case DECC:
+				
+				break;
+			case BRANCH:
+				
+				break;
+			case CMPLE:
+				
+				break;
+			case CMPL:
+				
+				break;
+			case CMPGE:
+				
+				break;
+			case CMPG:
+				
+				break;
+			case CMPE:
+				
+				break;
+			case CMPNE:
+				
+				break;
+			case 65:
+				
+				break;
+			case BRNCHC:
+				
+				break;
+
+			default:
+				printf("Def\n");
+				
+				break;
+		}
+		running(sc, pc++);
+	}
+	else
+	{
+		return;
 	}
 }
 
