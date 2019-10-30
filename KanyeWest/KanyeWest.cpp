@@ -215,7 +215,7 @@ int main(int argc)
 	char *sc;
 	char *sd;
 	//errno_t err;
-	st_node stack; //struct st_stack stack;
+	st_stack* stack = createStack(100); //struct st_stack stack;
 	long filend;
 
 	fopen_s(&fp, "C:\\test2.ye", "rb");
@@ -261,7 +261,8 @@ int main(int argc)
 
 	for (int i = 0; i < filend; ++i)
 	{
-		fread(&stack, sizeof(struct st_node), 1, fp);
+		fread();
+		//fread(&stack, sizeof(struct st_node), 1, fp);
 		//printf("Id:  %d\tInt:  %d\tbytes:  %d\n", stack.u.id, stack.u.Int32, stack.u.bytes);//"tipo:  %d\tapuntador:  %d\tcaracter:  %d\tdireccion: %d\tdoble: %d\tentero: %d\n", stack.tipo, stack.dato.apuntador, stack.dato.caracter, stack.dato.dir, stack.dato.doble, stack.dato.entero);
 		//printf("bytes:  %d\n", stack.u.bytes[0]);
 		//printf("bytes:  %d\n", stack.u.bytes[1]);
@@ -271,7 +272,7 @@ int main(int argc)
 
 	if (loadFile())
 	{
-		running(sc, PC);
+		running(sc, PC, sd);
 	}
 	else
 	{
@@ -327,227 +328,54 @@ int compareTo(const char *a, char *b)
 	return 1;
 }
 
-
-void running(char* sc, int pc)
+void ConvertIntToByte(unsigned int n, std::ofstream& outfile)
 {
-	printf("Enhorabuena!\n");
+	unsigned char bytes[4];
+	//Get each byte value from int.
+	bytes[0] = (n >> 24) & 0xFF;
+	bytes[1] = (n >> 16) & 0xFF;
+	bytes[2] = (n >> 8) & 0xFF;
+	bytes[3] = n & 0xFF;
 
-	while (sc[pc] != 0)//SegmentoDeCodigo[Puntero]!=Null o 0 o final) <---Fixfix
-	{
-		switch (sc[pc])//*(sc + pc))//SegmentoDeCodigo[Puntero])
-		{
-		case EFE:
-			break;
-		case RDI:
-			pc++;
-			//scanf("@d", &x);
-			break;
-		case RDD:
-			pc++;
-			break;
-		case RDS:
-			pc++;
-			break;
-		case RDB:
-			pc++;
-			break;
-		case RDC:
-			pc++;
-			break;
-		case RDIV:
-			pc++;
-			break;
-		case RDDV:
-			pc++;
-			break;
-		case RDSV:
-			pc++;
-			break;
-		case RDBV:
-			pc++;
-			break;
-		case RDCV:
-			pc++;
-			break;
-		case PRTM:
-			pc++;
-			break;
-		case PRTI:
-			pc++;
-			break;
-		case PRTD:
-			pc++;
-			break;
-		case PRTS:
-			pc++;
-			break;
-		case PRTB:
-			pc++;
-			break;
-		case PRTC:
-			pc++;
-			break;
-		case PRTIV:
-			pc++;
-			break;
-		case PRTDV:
-			pc++;
-			break;
-		case PRTSV:
-			pc++;
-			break;
-		case PRTBV:
-			pc++;
-			break;
-		case PRTCV:
-			pc++;
-			break;
-		case PUSHI:
-			pc++;
-			break;
-		case PUSHD:
-			pc++;
-			break;
-		case PUSHS:
-			pc++;
-			break;
-		case PUSHB:
-			printf("PUSHB\n");
-			pc++;
-			break;
-		case PUSHC:
-			pc++;
-			break;
-		case PUSHKI:
-			pc++;
-			break;
-		case PUSHKD:
-			pc++;
-			break;
-		case PUSHKS:
-			pc++;
-			break;
-		case PUSHKB:
-			pc++;
-			break;
-		case PUSHKC:
-			pc++;
-			break;
-		case POPI:
-			pc++;
-			break;
-		case POPD:
-			pc++;
-			break;
-		case POPS:
-			pc++;
-			break;
-		case POPB:
-			pc++;
-			break;
-		case POPC:
-			pc++;
-			break;
-		case POPIV:
-			pc++;
-			break;
-		case POPDV:
-			pc++;
-			break;
-		case POPSV:
-			pc++;
-			break;
-		case POPBV:
-			pc++;
-			break;
-		case POPCV:
-			pc++;
-			break;
-		case SUM:
-			pc++;
-			break;
-		case SUB:
-			pc++;
-			break;
-		case MULT:
-			pc++;
-			break;
-		case DIV:
-			pc++;
-			break;
-		case MOD:
-			pc++;
-			break;
-		case AND:
-			pc++;
-			break;
-		case OR:
-			pc++;
-			break;
-		case XOR:
-			pc++;
-			break;
-		case MAX:
-			pc++;
-			break;
-		case MIN:
-			pc++;
-			break;
-		case INCI:
-			pc++;
-			break;
-		case INCD:
-			pc++;
-			break;
-		case INCC:
-			pc++;
-			break;
-		case DECI:
-			pc++;
-			break;
-		case DECD:
-			pc++;
-			break;
-		case DECC:
-			pc++;
-			break;
-		case BRANCH:
-			pc++;
-			break;
-		case CMPLE:
-			pc++;
-			break;
-		case CMPL:
-			pc++;
-			break;
-		case CMPGE:
-			pc++;
-			break;
-		case CMPG:
-			pc++;
-			break;
-		case CMPE:
-			pc++;
-			break;
-		case CMPNE:
-			pc++;
-			break;
-		case 65:
-			pc++;
-			break;
-		case BRNCHC:
-			pc++;
-			break;
+	int Int32 = 0;
 
-		default:
-			printf("Def\n");
-			pc++;
-			break;
-		}
-	}
+	Int32 = (Int32 << 8) + bytes[3];
+	Int32 = (Int32 << 8) + bytes[2];
+	Int32 = (Int32 << 8) + bytes[1];
+	Int32 = (Int32 << 8) + bytes[0];
+	outfile << bytes[0];
+	outfile << bytes[1];
+	outfile << bytes[2];
+	outfile << bytes[3];
+
 }
 
-void running(char* sc, int pc)
+void ConvertShortToByte(unsigned int n, std::ofstream& outfile)
+{
+	unsigned char bytes[2];
+	//Get each byte value from short.
+	bytes[1] = n & 0xFF;
+	outfile << bytes[0];
+	outfile << bytes[1];
+
+	int Int16 = 0;
+
+	Int16 = (Int16 << 8) + bytes[1];
+	Int16 = (Int16 << 8) + bytes[0];
+}
+
+void ConvertDoubleToByte(double* n, std::ofstream& outfile)
+{
+	unsigned char bytes[4];
+
+	char* ptrByte = (char*)n;
+
+
+	outfile << n;
+
+}
+
+void running(char* sc, int pc, char* sd)
 {
 	printf("Enhorabuena!\n");
 	if (sc[pc] != 0)
@@ -557,7 +385,11 @@ void running(char* sc, int pc)
 			case EFE:
 				break;
 			case RDI:
-				
+				int aux;
+				char* buf = (char*)malloc(2 * sizeof(char));
+				int dir = buf[0] | buf[1] << 8;
+				fseek(
+				scanf("%d", aux);
 				break;
 			case RDD:
 				
