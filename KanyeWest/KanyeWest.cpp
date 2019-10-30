@@ -87,10 +87,6 @@ bool loadFile();
 void running(char*, int);
 int compareTo(const char*, char*);
 
-
-
-
-
 #pragma region stwack uwu
 struct st_node {
 	char tipo;
@@ -164,18 +160,29 @@ void printNodeContent(st_node item)
 	switch (item.tipo)
 	{
 	case 'i':
-		printf("%d pushed to stack\n", item.dato.entero);
+		printf("%d top of stack\n", item.dato.entero);
 		break;
 	case 'c':
-		printf("%c pushed to stack\n", item.dato.caracter);
+		printf("%c top of stack\n", item.dato.caracter);
 		break;
 	case 'd':
-		printf("%f pushed to stack\n", item.dato.doble);
+		printf("%f top of stack\n", item.dato.doble);
 		break;
 	case 's':
-		printf("%d pushed to stack\n", item.dato.dir);
+		printf("%d top of stack\n", item.dato.dir);
 		break;
 	}
+}
+
+void printErrthang(st_stack* stack)
+{
+	if (!isEmpty(stack))
+	{
+		printNodeContent(pop(stack));
+		return printErrthang(stack);
+	}
+	else
+		return;
 }
 
 int Test() {
@@ -193,11 +200,13 @@ int Test() {
 	node.dato.doble = 10.3;
 	push(stack, node);
 
+	printErrthang(stack);
 	//printf("%d popped from stack\n", pop(stack).dato.doble);
 
 	return 0;
 }
 #pragma endregion
+
 
 int main(int argc)
 {
@@ -300,6 +309,16 @@ int verificarHeader(char *s)
 
 int compareTo(const char *a, char *b)
 {
+	if (*a)
+	{
+		if (*a++ != *b++)
+			return 0;
+		else
+			return compareTo(a, b);
+	}
+	else
+		return 1;
+	
 	while (*a)
 	{
 		if (*a++ != *b++)
