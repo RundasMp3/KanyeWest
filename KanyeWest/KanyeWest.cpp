@@ -77,15 +77,11 @@
 #define CMPG 62
 #define CMPE 63
 #define CMPNE 64
-#define IDX 64
+#define IDX 65
 #define BRNCHC 66
 #pragma endregion
 
-int verificarHeader(char*);
-int ConvertirShortInt(char*);
-bool loadFile();
-void running(char*, int);
-int compareTo(const char*, char*);
+
 
 #pragma region stwack uwu
 struct st_node {
@@ -207,6 +203,49 @@ int Test() {
 }
 #pragma endregion
 
+#pragma region Vawables
+struct tb_Variable {
+	tb_Variable* Next;
+	short dir;
+	uint16_t size;
+	char type;
+	char* name;
+	st_node* value;
+};
+
+struct tb_Variable* getLatest(tb_Variable* first) {
+	if (first->Next == nullptr) {
+		return first;
+	}
+	else {
+		return getLatest(first->Next);
+	}
+};
+
+struct tb_Table {
+	tb_Variable* First;
+
+};
+
+struct tb_Table* createTable(tb_Variable* first)
+{
+	struct tb_Table* table = (struct tb_Table*)malloc(sizeof(struct tb_Table));
+	table->First = first;
+	return table;
+}
+
+void AddVariable(tb_Table* table, tb_Variable* newVariable) {
+	getLatest(table->First)->Next = newVariable;
+}
+#pragma endregion
+
+
+int index = 0;
+int verificarHeader(char*);
+int ConvertirShortInt(char*);
+bool loadFile();
+void running(char*, int, char*, st_stack*);
+int compareTo(const char*, char*);
 
 int main(int argc)
 {
@@ -218,7 +257,7 @@ int main(int argc)
 	st_stack* stack = createStack(100); //struct st_stack stack;
 	long filend;
 
-	fopen_s(&fp, "C:\\test2.ye", "rb");
+	fopen_s(&fp, "test.ye", "rb");
 	
 	//char i = fread(buffer, 1, 11, fp);
 	fseek(fp, 0, SEEK_END);
@@ -241,10 +280,23 @@ int main(int argc)
 
 	//st_stack stack[17];
 
-	int TSC = (int)((buffer[7] << 8) | buffer[8]);
+	int TSC = (int)((buffer[7]) | buffer[8]);
+	int TSD = (int)((buffer[9]) | buffer[10]);
 	//stack->dato = ((buffer[9] << 8) | buffer[10]);
-	sc = (char*)malloc(TSC);
-	sd = (char*)malloc(TSC);
+	sc = (char*)malloc(TSC * sizeof(char*));
+	sd = (char*)malloc(TSD * sizeof(char*));
+
+	for (int i = 0; i <= TSC; i++)
+	{
+		sc[i] = buffer[i + 11];
+		printf("ins\t%d\tdir%d\n", sc[i], i);
+	}
+	printf("\n");
+	for (int i = 0; i < TSD; i++)
+	{
+		printf("ins\t%d\tdir%d\n", sd[i], i);
+	}
+	printf("\n");
 
 	if (sc == NULL) {
 		printf("Memory not allocated.\n");
@@ -254,30 +306,14 @@ int main(int argc)
 		printf("Memory not allocated.\n");
 		exit(0);
 	}
+	
 	//i = fread(sc, 1, TSC, fp);
 	int TOS = -1;
 	int PC = 0;//deberia comenzar en 11, creo
 
 
-	for (int i = 0; i < filend; ++i)
-	{
-		fread();
-		//fread(&stack, sizeof(struct st_node), 1, fp);
-		//printf("Id:  %d\tInt:  %d\tbytes:  %d\n", stack.u.id, stack.u.Int32, stack.u.bytes);//"tipo:  %d\tapuntador:  %d\tcaracter:  %d\tdireccion: %d\tdoble: %d\tentero: %d\n", stack.tipo, stack.dato.apuntador, stack.dato.caracter, stack.dato.dir, stack.dato.doble, stack.dato.entero);
-		//printf("bytes:  %d\n", stack.u.bytes[0]);
-		//printf("bytes:  %d\n", stack.u.bytes[1]);
-		//printf("bytes:  %d\n", stack.u.bytes[2]);
-		//printf("bytes:  %d\n", stack.u.bytes[3]);
-	}
+	running(sc, PC, sd, createStack(100));
 
-	if (loadFile())
-	{
-		running(sc, PC, sd);
-	}
-	else
-	{
-
-	}
 }
 
 
@@ -328,26 +364,196 @@ int compareTo(const char *a, char *b)
 	return 1;
 }
 
-void ConvertIntToByte(unsigned int n, std::ofstream& outfile)
+void LeerYEscribirIntenDir(char* sd, int dir)
 {
 	unsigned char bytes[4];
+	unsigned int n;
+	scanf_s("%d", &n);
 	//Get each byte value from int.
-	bytes[0] = (n >> 24) & 0xFF;
-	bytes[1] = (n >> 16) & 0xFF;
-	bytes[2] = (n >> 8) & 0xFF;
-	bytes[3] = n & 0xFF;
+	bytes[3] = (n >> 24) & 0x000000FF;
+	bytes[2] = (n >> 16) & 0x0000FF00;
+	bytes[1] = (n >> 8) & 0x00FF0000;
+	bytes[0] = n & 0xFF;
 
 	int Int32 = 0;
 
-	Int32 = (Int32 << 8) + bytes[3];
+	/*Int32 = (Int32 << 8) + bytes[3]; //UNCOMMENT TO DEBUG VALUE
 	Int32 = (Int32 << 8) + bytes[2];
 	Int32 = (Int32 << 8) + bytes[1];
-	Int32 = (Int32 << 8) + bytes[0];
-	outfile << bytes[0];
-	outfile << bytes[1];
-	outfile << bytes[2];
-	outfile << bytes[3];
+	Int32 = (Int32 << 8) + bytes[0];*/
 
+	sd[dir++] = bytes[3];
+	sd[dir++] = bytes[2];
+	sd[dir++] = bytes[1];
+	sd[dir++] = bytes[0];
+
+	Int32 = bytes[0] | bytes[1] | bytes[2] | bytes[3];
+	printf("%d", bytes[0]);
+	printf("%d", bytes[3]);
+	printf("\n");
+	printf("DATA SEGMENT\n");
+	for (int i = 0; i < 4; i++)
+	{
+		printf("ins\t%d\tdir%d\n", sd[i], i);
+	}
+}
+
+void LeerYEscribirDoubleenDir(char* sd, int dir)
+{
+	unsigned char bytes[8];
+	double n;
+	scanf_s("%f", &n);
+	//Get each byte value from int.
+	/*bytes[7] = (n >> 52) & 0x00000000000000FF;
+	bytes[6] = (n >> 48) & 0x000000000000FF00;
+	bytes[5] = (n >> 40) & 0x0000000000FF0000;
+	bytes[4] = (n >> 32) & 0x00000000FF000000;
+	bytes[3] = (n >> 24) & 0x000000FF00000000;
+	bytes[2] = (n >> 16) & 0x0000FF0000000000;
+	bytes[1] = (n >> 8)  & 0x00FF000000000000;
+	bytes[0] = n & 0xFF;*/
+
+	int Int32 = 0;
+
+	/*Int32 = (Int32 << 8) + bytes[3]; //UNCOMMENT TO DEBUG VALUE
+	Int32 = (Int32 << 8) + bytes[2];
+	Int32 = (Int32 << 8) + bytes[1];
+	Int32 = (Int32 << 8) + bytes[0];*/
+
+	sd[dir++] = bytes[3];
+	sd[dir++] = bytes[2];
+	sd[dir++] = bytes[1];
+	sd[dir++] = bytes[0];
+
+	Int32 = bytes[0] | bytes[1] | bytes[2] | bytes[3];
+	printf("%d", bytes[0]);
+	printf("%d", bytes[3]);
+	printf("\n");
+	printf("DATA SEGMENT\n");
+	for (int i = 0; i < 4; i++)
+	{
+		printf("ins\t%d\tdir%d\n", sd[i], i);
+	}
+}
+
+void LeerYEscribirCharenDir(char* sd, int dir)
+{
+	unsigned char n;
+	scanf_s("%a", &n);
+	//Get each byte value from int.
+
+
+
+	/*Int32 = (Int32 << 8) + bytes[3]; //UNCOMMENT TO DEBUG VALUE
+	Int32 = (Int32 << 8) + bytes[2];
+	Int32 = (Int32 << 8) + bytes[1];
+	Int32 = (Int32 << 8) + bytes[0];*/
+
+	sd[dir++] = n;
+
+
+	printf("%a", n);
+	printf("\n");
+	printf("DATA SEGMENT\n");
+	for (int i = 0; i < 4; i++)
+	{
+		printf("ins\t%d\tdir%d\n", sd[i], i);
+	}
+}
+
+
+void EscribirIntenDir(unsigned int n, char* sd, int dir)
+{
+	unsigned char bytes[4];
+	unsigned int n;
+	//Get each byte value from int.
+	bytes[3] = (n >> 24) & 0x000000FF;
+	bytes[2] = (n >> 16) & 0x0000FF00;
+	bytes[1] = (n >> 8) & 0x00FF0000;
+	bytes[0] = n & 0xFF;
+
+	int Int32 = 0;
+
+	/*Int32 = (Int32 << 8) + bytes[3]; //UNCOMMENT TO DEBUG VALUE
+	Int32 = (Int32 << 8) + bytes[2];
+	Int32 = (Int32 << 8) + bytes[1];
+	Int32 = (Int32 << 8) + bytes[0];*/
+
+	sd[dir++] = bytes[3];
+	sd[dir++] = bytes[2];
+	sd[dir++] = bytes[1];
+	sd[dir++] = bytes[0];
+
+	//Debugging flags
+	//Int32 = bytes[0] | bytes[1] | bytes[2] | bytes[3];
+	//printf("%d", bytes[0]);
+	//printf("%d", bytes[3]);
+	//printf("\n");
+	//printf("DATA SEGMENT\n");
+	//for (int i = 0; i < 4; i++)
+	//{
+	//	printf("ins\t%d\tdir%d\n", sd[i], i);
+	//}
+}
+
+void EscribirDoubleenDir(double n, char* sd, int dir)
+{
+	unsigned char bytes[8];
+	double n;
+	//Get each byte value from int.
+	/*bytes[7] = (n >> 52) & 0x00000000000000FF;
+	bytes[6] = (n >> 48) & 0x000000000000FF00;
+	bytes[5] = (n >> 40) & 0x0000000000FF0000;
+	bytes[4] = (n >> 32) & 0x00000000FF000000;
+	bytes[3] = (n >> 24) & 0x000000FF00000000;
+	bytes[2] = (n >> 16) & 0x0000FF0000000000;
+	bytes[1] = (n >> 8)  & 0x00FF000000000000;
+	bytes[0] = n & 0xFF;*/
+
+	int Int32 = 0;
+
+	/*Int32 = (Int32 << 8) + bytes[3]; //UNCOMMENT TO DEBUG VALUE
+	Int32 = (Int32 << 8) + bytes[2];
+	Int32 = (Int32 << 8) + bytes[1];
+	Int32 = (Int32 << 8) + bytes[0];*/
+
+	sd[dir++] = bytes[3];
+	sd[dir++] = bytes[2];
+	sd[dir++] = bytes[1];
+	sd[dir++] = bytes[0];
+
+	Int32 = bytes[0] | bytes[1] | bytes[2] | bytes[3];
+	printf("%d", bytes[0]);
+	printf("%d", bytes[3]);
+	printf("\n");
+	printf("DATA SEGMENT\n");
+	for (int i = 0; i < 4; i++)
+	{
+		printf("ins\t%d\tdir%d\n", sd[i], i);
+	}
+}
+
+void EscribirCharenDir(unsigned char n, char* sd, int dir)
+{
+	//Get each byte value from int.
+
+
+
+	/*Int32 = (Int32 << 8) + bytes[3]; //UNCOMMENT TO DEBUG VALUE
+	Int32 = (Int32 << 8) + bytes[2];
+	Int32 = (Int32 << 8) + bytes[1];
+	Int32 = (Int32 << 8) + bytes[0];*/
+
+	sd[dir++] = n;
+
+
+	printf("%a", n);
+	printf("\n");
+	printf("DATA SEGMENT\n");
+	for (int i = 0; i < 4; i++)
+	{
+		printf("ins\t%d\tdir%d\n", sd[i], i);
+	}
 }
 
 void ConvertShortToByte(unsigned int n, std::ofstream& outfile)
@@ -375,39 +581,222 @@ void ConvertDoubleToByte(double* n, std::ofstream& outfile)
 
 }
 
-void running(char* sc, int pc, char* sd)
+void SUMVARS(st_stack* stack)
 {
-	printf("Enhorabuena!\n");
-	if (sc[pc] != 0)
+	st_node nodo = pop(stack);
+	st_node aux = pop(stack);
+	switch (nodo.tipo)
 	{
+	case 'i':
+		nodo.dato.entero += aux.dato.entero;
+		printf("SUMVALUE:\t%d", nodo.dato.entero);
+
+		break;
+	case 'd':
+		nodo.dato.doble += aux.dato.doble;
+		printf("SUMVALUE:\t%f", nodo.dato.doble);
+
+		break;
+	case 'c':
+		nodo.dato.caracter += aux.dato.caracter;
+		printf("SUMVALUE:\t%a", nodo.dato.caracter);
+
+		break;
+	case 's':
+		//TODO: SUM string
+		break;
+
+	}
+	push(stack, nodo);
+}
+
+void SUBVARS(st_stack* stack)
+{
+	st_node nodo = pop(stack);
+	st_node aux = pop(stack);
+	switch (nodo.tipo)
+	{
+	case 'i':
+		nodo.dato.entero -= aux.dato.entero;
+		printf("SUB VALUE:\t%d", nodo.dato.entero);
+
+		break;
+	case 'd':
+		nodo.dato.doble -= aux.dato.doble;
+		printf("SUB VALUE:\t%f", nodo.dato.doble);
+
+		break;
+	case 'c':
+		nodo.dato.caracter -= aux.dato.caracter;
+		printf("SUB VALUE:\t%a", nodo.dato.caracter);
+
+		break;
+	case 's':
+		//TODO: SUM string
+		break;
+
+	}
+	push(stack, nodo);
+}
+
+void MULTVARS(st_stack* stack)
+{
+	st_node nodo = pop(stack);
+	st_node aux = pop(stack);
+	switch (nodo.tipo)
+	{
+	case 'i':
+		nodo.dato.entero *= aux.dato.entero;
+		printf("MULT VALUE:\t%d", nodo.dato.entero);
+
+		break;
+	case 'd':
+		nodo.dato.doble *= aux.dato.doble;
+		printf("MULT VALUE:\t%f", nodo.dato.doble);
+
+		break;
+	case 'c':
+		nodo.dato.caracter *= aux.dato.caracter;
+		printf("MULT VALUE:\t%a", nodo.dato.caracter);
+
+		break;
+	case 's':
+		//TODO: SUM string
+		break;
+
+	}
+	push(stack, nodo);
+}
+
+void DIVVARS(st_stack* stack)
+{
+	st_node nodo = pop(stack);
+	st_node aux = pop(stack);
+	switch (nodo.tipo)
+	{
+	case 'i':
+		nodo.dato.entero /= aux.dato.entero;
+		printf("DIV VALUE:\t%d", nodo.dato.entero);
+
+		break;
+	case 'd':
+		nodo.dato.doble /= aux.dato.doble;
+		printf("DIV VALUE:\t%f", nodo.dato.doble);
+
+		break;
+	case 'c':
+		nodo.dato.caracter /= aux.dato.caracter;
+		printf("DIV VALUE:\t%a", nodo.dato.caracter);
+
+		break;
+	case 's':
+		//TODO: SUM string
+		break;
+
+	}
+	push(stack, nodo);
+}
+
+void MAXVAR(st_stack* stack)
+{
+	st_node node1;
+	st_node node2;
+	node1 = pop(stack);
+	node2 = pop(stack);
+
+	switch (node1.tipo)
+	{
+	case 'i':
+		if (node1.dato.entero > node2.dato.entero)
+		{
+			push(stack, node1);
+		}
+		else
+		{
+			push(stack, node2);
+		}
+		break;
+	case 'd':
+		if (node1.dato.doble > node2.dato.doble)
+		{
+			push(stack, node1);
+		}
+		else
+		{
+			push(stack, node2);
+		}
+		break;
+	case 'c':
+		if (node1.dato.caracter > node2.dato.caracter)
+		{
+			push(stack, node1);
+		}
+		else
+		{
+			push(stack, node2);
+		}
+		break;
+	case 's':
+		//TODO: SUM string
+		break;
+
+	}
+}
+
+void running(char* sc, int pc, char* sd, st_stack* stack)
+{
+	printf("BACK IN CYCLE \n");
+	for (int i = 0; i <= 16; i++)
+	{
+		printf("ins\t%d\tdir%d\n", sc[i], i);
+
+	}
+	printf("CURRENTLY Running\tins %d\tdir %d\n", sc[pc], pc);
+	if (sc[pc] != EFE)
+	{
+		int dir = 0;
+		int valuei = 0;
+		st_node nodo;
+		double valued = 0;
 		switch (sc[pc])//*(sc + pc))//SegmentoDeCodigo[Puntero])
 		{
 			case EFE:
 				break;
 			case RDI:
-				int aux;
-				char* buf = (char*)malloc(2 * sizeof(char));
-				int dir = buf[0] | buf[1] << 8;
-				fseek(
-				scanf("%d", aux);
+				dir = (int)((sc[++pc] << 8) | sc[++pc]);
+				
+				LeerYEscribirIntenDir(sd, dir);
 				break;
 			case RDD:
-				
+				dir = (int)((sc[++pc] << 8) | sc[++pc]);
+
+				LeerYEscribirIntenDir(sd, dir);
+				break;
 				break;
 			case RDS:
-				
+				dir = (int)((sc[++pc] << 8) | sc[++pc]);
+
+				LeerYEscribirIntenDir(sd, dir);
 				break;
 			case RDB:
-				
+				dir = (int)((sc[++pc] << 8) | sc[++pc]);
+
+				LeerYEscribirCharenDir(sd, dir);
 				break;
 			case RDC:
-				
+				dir = (int)((sc[++pc] << 8) | sc[++pc]);
+
+				LeerYEscribirCharenDir(sd, dir);
 				break;
 			case RDIV:
-				
+				dir = (int)((sc[++pc] << 8) | sc[++pc]);
+				dir += index;
+				LeerYEscribirIntenDir(sd, dir);
 				break;
 			case RDDV:
-				
+				dir = (int)((sc[++pc] << 8) | sc[++pc]);
+				dir += index;
+				LeerYEscribirDoubleenDir(sd, dir);
 				break;
 			case RDSV:
 				
@@ -468,61 +857,116 @@ void running(char* sc, int pc, char* sd)
 				
 				break;
 			case PUSHKI:
-				
+				valuei = 0;
+				pc++;
+				//value = value | sc[pc++] | sc[pc++] | sc[pc++] | sc[pc];
+				valuei = (valuei << 8) + sc[pc++];
+				valuei = (valuei << 8) + sc[pc++];
+				valuei = (valuei << 8) + sc[pc++];
+				valuei = (valuei << 8) + sc[pc];
+				nodo.tipo = 'i';
+				nodo.dato.entero = valuei;
+				push(stack, nodo);
 				break;
 			case PUSHKD:
-				
+				valued = 0;
+				pc++;
+				//value = value | sc[pc++] | sc[pc++] | sc[pc++] | sc[pc];
+				char* value = (char*)malloc(8 * sizeof(char));
+				for (int i = 0; i < 8; i++)
+				{
+					value[i] = sc[pc++];
+				}
+				memcpy(&valued, value, sizeof(double));
+				nodo.tipo = 'd';
+				nodo.dato.entero = valued;
+				push(stack, nodo);
 				break;
 			case PUSHKS:
 				
 				break;
 			case PUSHKB:
-				
+				nodo.tipo = 'c';
+				nodo.dato.caracter = sc[++pc];
+				push(stack, nodo);
 				break;
 			case PUSHKC:
-				
+				nodo.tipo = 'c';
+				nodo.dato.caracter = sc[++pc];
+				push(stack, nodo);
 				break;
 			case POPI:
+				if (top(stack).tipo != 'i')
+				{
+					printf("NO INT AT TOP OF STACK.");
+				}
+				dir = (int)((sc[++pc] << 8) | sc[++pc]);
 				
 				break;
 			case POPD:
-				
+				if (top(stack).tipo != 'd')
+				{
+					printf("NO DOUBLE AT TOP OF STACK.");
+				}
 				break;
 			case POPS:
 				
 				break;
 			case POPB:
-				
+				if (top(stack).tipo != 'c')
+				{
+					printf("NO BOOL AT TOP OF STACK.");
+				}
 				break;
 			case POPC:
+				if (top(stack).tipo != 'c')
+				{
+					printf("NO CHAR AT TOP OF STACK.");
+				}
+				dir = (int)((sc[++pc] << 8) | sc[++pc]);
 				
 				break;
 			case POPIV:
-				
+				if (top(stack).tipo != 'i')
+				{
+					printf("NO INT AT TOP OF STACK.");
+				}
 				break;
 			case POPDV:
-				
+				if (top(stack).tipo != 'd')
+				{
+					printf("NO DOUBLE AT TOP OF STACK.");
+				}
 				break;
 			case POPSV:
-				
+				if (top(stack).tipo != 's')
+				{
+					printf("NO STRING AT TOP OF STACK.");
+				}
 				break;
 			case POPBV:
-				
+				if (top(stack).tipo != 'b')
+				{
+					printf("NO BOOL AT TOP OF STACK.");
+				}
 				break;
 			case POPCV:
-				
+				if (top(stack).tipo != 'c')
+				{
+					printf("NO CHAR AT TOP OF STACK.");
+				}
 				break;
 			case SUM:
-				
+				SUMVARS(stack);
 				break;
 			case SUB:
-				
+				SUBVARS(stack);
 				break;
 			case MULT:
-				
+				MULTVARS(stack);
 				break;
 			case DIV:
-				
+				DIVVARS(stack);
 				break;
 			case MOD:
 				
@@ -537,7 +981,7 @@ void running(char* sc, int pc, char* sd)
 				
 				break;
 			case MAX:
-				
+				pop(stack)
 				break;
 			case MIN:
 				
@@ -581,34 +1025,24 @@ void running(char* sc, int pc, char* sd)
 			case CMPNE:
 				
 				break;
-			case 65:
-				
+			case IDX:
+				index = pop(stack).dato.entero;
 				break;
 			case BRNCHC:
 				
 				break;
+
 
 			default:
 				printf("Def\n");
 				
 				break;
 		}
-		running(sc, pc++);
+		pc++;
+		running(sc, pc, sd, stack);
 	}
 	else
 	{
 		return;
 	}
 }
-
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
