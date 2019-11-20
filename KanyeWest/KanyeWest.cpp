@@ -249,21 +249,21 @@ int compareTo(const char*, char*);
 
 int main(int argc)
 {
-	FILE *fp;
-	char *buffer = NULL;// [131081];
-	char *sc;
-	char *sd;
+	FILE* fp;
+	char* buffer = NULL;// [131081];
+	char* sc;
+	char* sd;
 	//errno_t err;
 	st_stack* stack = createStack(100); //struct st_stack stack;
 	long filend;
 
-	fopen_s(&fp, "test.ye", "rb");
-	
+	fopen_s(&fp, "zoinks.ye", "rb");
+
 	//char i = fread(buffer, 1, 11, fp);
 	fseek(fp, 0, SEEK_END);
 	filend = ftell(fp);
 	rewind(fp);
-	buffer = (char *)malloc((filend + 1) * sizeof(char)); // Enough memory for file + \0
+	buffer = (char*)malloc((filend + 1) * sizeof(char)); // Enough memory for file + \0
 	fread(buffer, filend, 1, fp); // Read in the entire file
 	fclose(fp); // Close the file
 	buffer[filend] = '\0';
@@ -306,7 +306,7 @@ int main(int argc)
 		printf("Memory not allocated.\n");
 		exit(0);
 	}
-	
+
 	//i = fread(sc, 1, TSC, fp);
 	int TOS = -1;
 	int PC = 0;//deberia comenzar en 11, creo
@@ -328,7 +328,7 @@ short int TOS;
 st_node STACK[MAX_STACK];
 
 
-int ConvertirShortInt(char *a)
+int ConvertirShortInt(char* a)
 {
 	return atoi(a);//	No convierte short a int, sino que lo trata de leer char como int desde el principio, checa si sirve despues
 }
@@ -338,13 +338,13 @@ bool loadFile()
 	return true;
 }
 
-int verificarHeader(char *s)
+int verificarHeader(char* s)
 {
 	return compareTo("ICC2020", s);
 }
 
 
-int compareTo(const char *a, char *b)
+int compareTo(const char* a, char* b)
 {
 	if (*a)
 	{
@@ -355,7 +355,7 @@ int compareTo(const char *a, char *b)
 	}
 	else
 		return 1;
-	
+
 	while (*a)
 	{
 		if (*a++ != *b++)
@@ -465,7 +465,7 @@ void LeerYEscribirCharenDir(char* sd, int dir)
 void EscribirIntenDir(unsigned int n, char* sd, int dir)
 {
 	unsigned char bytes[4];
-	unsigned int n;
+	//unsigned int n;
 	//Get each byte value from int.
 	bytes[3] = (n >> 24) & 0x000000FF;
 	bytes[2] = (n >> 16) & 0x0000FF00;
@@ -499,7 +499,7 @@ void EscribirIntenDir(unsigned int n, char* sd, int dir)
 void EscribirDoubleenDir(double n, char* sd, int dir)
 {
 	unsigned char bytes[8];
-	double n;
+	//double n;
 	//Get each byte value from int.
 	/*bytes[7] = (n >> 52) & 0x00000000000000FF;
 	bytes[6] = (n >> 48) & 0x000000000000FF00;
@@ -743,6 +743,454 @@ void MAXVAR(st_stack* stack)
 	}
 }
 
+void MINVAR(st_stack* stack)
+{
+	st_node node1;
+	st_node node2;
+	node1 = pop(stack);
+	node2 = pop(stack);
+
+	switch (node1.tipo)
+	{
+	case 'i':
+		if (node1.dato.entero < node2.dato.entero)
+		{
+			push(stack, node1);
+		}
+		else
+		{
+			push(stack, node2);
+		}
+		break;
+	case 'd':
+		if (node1.dato.doble < node2.dato.doble)
+		{
+			push(stack, node1);
+		}
+		else
+		{
+			push(stack, node2);
+		}
+		break;
+	case 'c':
+		if (node1.dato.caracter < node2.dato.caracter)
+		{
+			push(stack, node1);
+		}
+		else
+		{
+			push(stack, node2);
+		}
+		break;
+	case 's':
+		//TODO: SUM string
+		break;
+
+	}
+}
+
+void INCVARI(st_stack* stack)
+{
+	st_node nodo = pop(stack);
+	nodo.dato.entero++;
+	printf("SUMVALUE:\t%d", nodo.dato.entero);
+	push(stack, nodo);
+}
+
+void INCVARD(st_stack* stack)
+{
+	st_node nodo = pop(stack);
+	nodo.dato.doble++;
+	printf("SUMVALUE:\t%f", nodo.dato.doble);
+	push(stack, nodo);
+}
+
+void INCVARC(st_stack* stack)
+{
+	st_node nodo = pop(stack);
+	nodo.dato.caracter++;
+	printf("SUMVALUE:\t%a", nodo.dato.doble);
+	push(stack, nodo);
+}
+
+void DECVARI(st_stack* stack)
+{
+	st_node nodo = pop(stack);
+	nodo.dato.entero--;
+	printf("SUMVALUE:\t%d", nodo.dato.entero);
+	push(stack, nodo);
+}
+
+void DECVARD(st_stack* stack)
+{
+	st_node nodo = pop(stack);
+	nodo.dato.doble--;
+	printf("SUMVALUE:\t%f", nodo.dato.doble);
+	push(stack, nodo);
+}
+
+void DECVARC(st_stack* stack)
+{
+	st_node nodo = pop(stack);
+	nodo.dato.caracter--;
+	printf("SUMVALUE:\t%a", nodo.dato.doble);
+	push(stack, nodo);
+}
+
+void CMPVARLE(st_stack* stack)
+{
+	st_node node1;
+	st_node node2;
+	node1 = pop(stack);
+	node2 = pop(stack);
+
+	st_node result;
+	bool value = false;
+	result.tipo = 'c';
+	switch (node1.tipo)
+	{
+	case 'i':
+		if (node1.dato.entero <= node2.dato.entero)
+		{
+			//result = true;
+			result.dato.caracter = true;
+			push(stack, result);
+		}
+		else
+		{
+			//result = false;
+			result.dato.caracter = false;
+			push(stack, result);
+		}
+		break;
+	case 'd':
+		if (node1.dato.doble <= node2.dato.doble)
+		{
+			result.dato.caracter = true;
+			push(stack, result);
+		}
+		else
+		{
+			//result = false;
+			result.dato.caracter = false;
+			push(stack, result);
+		}
+		break;
+	case 'c':
+		if (node1.dato.caracter <= node2.dato.caracter)
+		{
+			//result = true;
+			result.dato.caracter = true;
+			push(stack, result);
+		}
+		else
+		{
+			//result = false;
+			result.dato.caracter = false;
+			push(stack, result);
+		}
+		break;
+	case 's':
+		//wtf goes here
+		break;
+	}
+}
+
+void CMPVARL(st_stack* stack)
+{
+	st_node node1;
+	st_node node2;
+	node1 = pop(stack);
+	node2 = pop(stack);
+
+	st_node result;
+	result.tipo = 'c';
+	switch (node1.tipo)
+	{
+	case 'i':
+		if (node1.dato.entero < node2.dato.entero)
+		{
+			//result = true;
+			result.dato.caracter = true;
+			push(stack, result);
+		}
+		else
+		{
+			//result = false;
+			result.dato.caracter = false;
+			push(stack, result);
+		}
+		break;
+	case 'd':
+		if (node1.dato.doble < node2.dato.doble)
+		{
+			//result = true;
+			result.dato.caracter = true;
+			push(stack, result);
+		}
+		else
+		{
+			//result = false;
+			result.dato.caracter = false;
+			push(stack, result);
+		}
+		break;
+	case 'c':
+		if (node1.dato.caracter < node2.dato.caracter)
+		{
+			//result = true;
+			result.dato.caracter = true;
+			push(stack, result);
+		}
+		else
+		{
+			//result = false;
+			result.dato.caracter = false;
+			push(stack, result);
+		}
+		break;
+	case 's':
+		//wtf goes here
+		break;
+	}
+}
+
+void CMPVARGE(st_stack* stack)
+{
+	st_node node1;
+	st_node node2;
+	node1 = pop(stack);
+	node2 = pop(stack);
+
+	st_node result;
+	result.tipo = 'c';
+	switch (node1.tipo)
+	{
+	case 'i':
+		if (node1.dato.entero >= node2.dato.entero)
+		{
+			//result = true;
+			result.dato.caracter = true;
+			push(stack, result);
+		}
+		else
+		{
+			//result = false;
+			result.dato.caracter = false;
+			push(stack, result);
+		}
+		break;
+	case 'd':
+		if (node1.dato.doble >= node2.dato.doble)
+		{
+			//result = true;
+			result.dato.caracter = true;
+			push(stack, result);
+		}
+		else
+		{
+			//result = false;
+			result.dato.caracter = false;
+			push(stack, result);
+		}
+		break;
+	case 'c':
+		if (node1.dato.caracter >= node2.dato.caracter)
+		{
+			//result = true;
+			result.dato.caracter = true;
+			push(stack, result);
+		}
+		else
+		{
+			//result = false;
+			result.dato.caracter = false;
+			push(stack, result);
+		}
+		break;
+	case 's':
+		//wtf goes here
+		break;
+	}
+}
+
+void CMPVARG(st_stack* stack)
+{
+	st_node node1;
+	st_node node2;
+	node1 = pop(stack);
+	node2 = pop(stack);
+
+	st_node result;
+	result.tipo = 'c';
+	switch (node1.tipo)
+	{
+	case 'i':
+		if (node1.dato.entero > node2.dato.entero)
+		{
+			//result = true;
+			result.dato.caracter = true;
+			push(stack, result);
+		}
+		else
+		{
+			//result = false;
+			result.dato.caracter = false;
+			push(stack, result);
+		}
+		break;
+	case 'd':
+		if (node1.dato.doble > node2.dato.doble)
+		{
+			//result = true;
+			result.dato.caracter = true;
+			push(stack, result);
+		}
+		else
+		{
+			//result = false;
+			result.dato.caracter = false;
+			push(stack, result);
+		}
+		break;
+	case 'c':
+		if (node1.dato.caracter > node2.dato.caracter)
+		{
+			//result = true;
+			result.dato.caracter = true;
+			push(stack, result);
+		}
+		else
+		{
+			//result = false;
+			result.dato.caracter = false;
+			push(stack, result);
+		}
+		break;
+	case 's':
+		//wtf goes here
+		break;
+	}
+}
+
+void CMPVARE(st_stack* stack)
+{
+	st_node node1;
+	st_node node2;
+	node1 = pop(stack);
+	node2 = pop(stack);
+
+	st_node result;
+	result.tipo = 'c';
+	switch (node1.tipo)
+	{
+	case 'i':
+		if (node1.dato.entero == node2.dato.entero)
+		{
+			//result = true;
+			result.dato.caracter = true;
+			push(stack, result);
+		}
+		else
+		{
+			//result = false;
+			result.dato.caracter = false;
+			push(stack, result);
+		}
+		break;
+	case 'd':
+		if (node1.dato.doble == node2.dato.doble)
+		{
+			//result = true;
+			result.dato.caracter = true;
+			push(stack, result);
+		}
+		else
+		{
+			//result = false;
+			result.dato.caracter = false;
+			push(stack, result);
+		}
+		break;
+	case 'c':
+		if (node1.dato.caracter == node2.dato.caracter)
+		{
+			//result = true;
+			result.dato.caracter = true;
+			push(stack, result);
+		}
+		else
+		{
+			//result = false;
+			result.dato.caracter = false;
+			push(stack, result);
+		}
+		break;
+	case 's':
+		//wtf goes here
+		break;
+	}
+}
+
+void CMPVARNE(st_stack* stack)
+{
+	st_node node1;
+	st_node node2;
+	node1 = pop(stack);
+	node2 = pop(stack);
+
+	st_node result;
+	result.tipo = 'c';
+	switch (node1.tipo)
+	{
+	case 'i':
+		if (node1.dato.entero != node2.dato.entero)
+		{
+			//result = true;
+			result.dato.caracter = true;
+			push(stack, result);
+		}
+		else
+		{
+			//result = false;
+			result.dato.caracter = false;
+			push(stack, result);
+		}
+		break;
+	case 'd':
+		if (node1.dato.doble != node2.dato.doble)
+		{
+			//result = true;
+			result.dato.caracter = true;
+			push(stack, result);
+		}
+		else
+		{
+			//result = false;
+			result.dato.caracter = false;
+			push(stack, result);
+		}
+		break;
+	case 'c':
+		if (node1.dato.caracter != node2.dato.caracter)
+		{
+			//result = true;
+			result.dato.caracter = true;
+			push(stack, result);
+		}
+		else
+		{
+			//result = false;
+			result.dato.caracter = false;
+			push(stack, result);
+		}
+		break;
+	case 's':
+		//wtf 
+		break;
+	}
+}
+
 void running(char* sc, int pc, char* sd, st_stack* stack)
 {
 	printf("BACK IN CYCLE \n");
@@ -760,283 +1208,294 @@ void running(char* sc, int pc, char* sd, st_stack* stack)
 		double valued = 0;
 		switch (sc[pc])//*(sc + pc))//SegmentoDeCodigo[Puntero])
 		{
-			case EFE:
-				break;
-			case RDI:
-				dir = (int)((sc[++pc] << 8) | sc[++pc]);
-				
-				LeerYEscribirIntenDir(sd, dir);
-				break;
-			case RDD:
-				dir = (int)((sc[++pc] << 8) | sc[++pc]);
+		case EFE:
+			break;
+		case RDI:
+			dir = (int)((sc[++pc] << 8) | sc[++pc]);
 
-				LeerYEscribirIntenDir(sd, dir);
-				break;
-				break;
-			case RDS:
-				dir = (int)((sc[++pc] << 8) | sc[++pc]);
+			LeerYEscribirIntenDir(sd, dir);
+			break;
+		case RDD:
+			dir = (int)((sc[++pc] << 8) | sc[++pc]);
 
-				LeerYEscribirIntenDir(sd, dir);
-				break;
-			case RDB:
-				dir = (int)((sc[++pc] << 8) | sc[++pc]);
+			LeerYEscribirIntenDir(sd, dir);
+			break;
+			break;
+		case RDS:
+			dir = (int)((sc[++pc] << 8) | sc[++pc]);
 
-				LeerYEscribirCharenDir(sd, dir);
-				break;
-			case RDC:
-				dir = (int)((sc[++pc] << 8) | sc[++pc]);
+			LeerYEscribirIntenDir(sd, dir);
+			break;
+		case RDB:
+			dir = (int)((sc[++pc] << 8) | sc[++pc]);
 
-				LeerYEscribirCharenDir(sd, dir);
-				break;
-			case RDIV:
-				dir = (int)((sc[++pc] << 8) | sc[++pc]);
-				dir += index;
-				LeerYEscribirIntenDir(sd, dir);
-				break;
-			case RDDV:
-				dir = (int)((sc[++pc] << 8) | sc[++pc]);
-				dir += index;
-				LeerYEscribirDoubleenDir(sd, dir);
-				break;
-			case RDSV:
-				
-				break;
-			case RDBV:
-				
-				break;
-			case RDCV:
-				
-				break;
-			case PRTM:
-				
-				break;
-			case PRTI:
-				
-				break;
-			case PRTD:
-				
-				break;
-			case PRTS:
-				
-				break;
-			case PRTB:
-				
-				break;
-			case PRTC:
-				
-				break;
-			case PRTIV:
-				
-				break;
-			case PRTDV:
-				
-				break;
-			case PRTSV:
-				
-				break;
-			case PRTBV:
-				
-				break;
-			case PRTCV:
-				
-				break;
-			case PUSHI:
-				
-				break;
-			case PUSHD:
-				
-				break;
-			case PUSHS:
-				
-				break;
-			case PUSHB:
-				printf("PUSHB\n");
-				
-				break;
-			case PUSHC:
-				
-				break;
-			case PUSHKI:
-				valuei = 0;
-				pc++;
-				//value = value | sc[pc++] | sc[pc++] | sc[pc++] | sc[pc];
-				valuei = (valuei << 8) + sc[pc++];
-				valuei = (valuei << 8) + sc[pc++];
-				valuei = (valuei << 8) + sc[pc++];
-				valuei = (valuei << 8) + sc[pc];
-				nodo.tipo = 'i';
-				nodo.dato.entero = valuei;
-				push(stack, nodo);
-				break;
-			case PUSHKD:
-				valued = 0;
-				pc++;
-				//value = value | sc[pc++] | sc[pc++] | sc[pc++] | sc[pc];
-				char* value = (char*)malloc(8 * sizeof(char));
-				for (int i = 0; i < 8; i++)
-				{
-					value[i] = sc[pc++];
-				}
-				memcpy(&valued, value, sizeof(double));
-				nodo.tipo = 'd';
-				nodo.dato.entero = valued;
-				push(stack, nodo);
-				break;
-			case PUSHKS:
-				
-				break;
-			case PUSHKB:
-				nodo.tipo = 'c';
-				nodo.dato.caracter = sc[++pc];
-				push(stack, nodo);
-				break;
-			case PUSHKC:
-				nodo.tipo = 'c';
-				nodo.dato.caracter = sc[++pc];
-				push(stack, nodo);
-				break;
-			case POPI:
-				if (top(stack).tipo != 'i')
-				{
-					printf("NO INT AT TOP OF STACK.");
-				}
-				dir = (int)((sc[++pc] << 8) | sc[++pc]);
-				
-				break;
-			case POPD:
-				if (top(stack).tipo != 'd')
-				{
-					printf("NO DOUBLE AT TOP OF STACK.");
-				}
-				break;
-			case POPS:
-				
-				break;
-			case POPB:
-				if (top(stack).tipo != 'c')
-				{
-					printf("NO BOOL AT TOP OF STACK.");
-				}
-				break;
-			case POPC:
-				if (top(stack).tipo != 'c')
-				{
-					printf("NO CHAR AT TOP OF STACK.");
-				}
-				dir = (int)((sc[++pc] << 8) | sc[++pc]);
-				
-				break;
-			case POPIV:
-				if (top(stack).tipo != 'i')
-				{
-					printf("NO INT AT TOP OF STACK.");
-				}
-				break;
-			case POPDV:
-				if (top(stack).tipo != 'd')
-				{
-					printf("NO DOUBLE AT TOP OF STACK.");
-				}
-				break;
-			case POPSV:
-				if (top(stack).tipo != 's')
-				{
-					printf("NO STRING AT TOP OF STACK.");
-				}
-				break;
-			case POPBV:
-				if (top(stack).tipo != 'b')
-				{
-					printf("NO BOOL AT TOP OF STACK.");
-				}
-				break;
-			case POPCV:
-				if (top(stack).tipo != 'c')
-				{
-					printf("NO CHAR AT TOP OF STACK.");
-				}
-				break;
-			case SUM:
-				SUMVARS(stack);
-				break;
-			case SUB:
-				SUBVARS(stack);
-				break;
-			case MULT:
-				MULTVARS(stack);
-				break;
-			case DIV:
-				DIVVARS(stack);
-				break;
-			case MOD:
-				
-				break;
-			case AND:
-				
-				break;
-			case OR:
-				
-				break;
-			case XOR:
-				
-				break;
-			case MAX:
-				pop(stack)
-				break;
-			case MIN:
-				
-				break;
-			case INCI:
-				
-				break;
-			case INCD:
-				
-				break;
-			case INCC:
-				
-				break;
-			case DECI:
-				
-				break;
-			case DECD:
-				
-				break;
-			case DECC:
-				
-				break;
-			case BRANCH:
-				
-				break;
-			case CMPLE:
-				
-				break;
-			case CMPL:
-				
-				break;
-			case CMPGE:
-				
-				break;
-			case CMPG:
-				
-				break;
-			case CMPE:
-				
-				break;
-			case CMPNE:
-				
-				break;
-			case IDX:
-				index = pop(stack).dato.entero;
-				break;
-			case BRNCHC:
-				
-				break;
+			LeerYEscribirCharenDir(sd, dir);
+			break;
+		case RDC:
+			dir = (int)((sc[++pc] << 8) | sc[++pc]);
+
+			LeerYEscribirCharenDir(sd, dir);
+			break;
+		case RDIV:
+			dir = (int)((sc[++pc] << 8) | sc[++pc]);
+			dir += index;
+			LeerYEscribirIntenDir(sd, dir);
+			break;
+		case RDDV:
+			dir = (int)((sc[++pc] << 8) | sc[++pc]);
+			dir += index;
+			LeerYEscribirDoubleenDir(sd, dir);
+			break;
+		case RDSV:
+			dir = (int)((sc[++pc] << 8) | sc[++pc]);
+			dir += index * 256;
+			LeerYEscribirCharenDir(sd, dir);
+			break;
+		case RDBV:
+			dir = (int)((sc[++pc] << 8) | sc[++pc]);
+			dir += index;
+			LeerYEscribirCharenDir(sd, dir);
+			break;
+		case RDCV:
+			dir = (int)((sc[++pc] << 8) | sc[++pc]);
+			dir += index;
+			LeerYEscribirCharenDir(sd, dir);
+			break;
+		case PRTM:
+
+			break;
+		case PRTI:
+
+			break;
+		case PRTD:
+
+			break;
+		case PRTS:
+
+			break;
+		case PRTB:
+
+			break;
+		case PRTC:
+
+			break;
+		case PRTIV:
+
+			break;
+		case PRTDV:
+
+			break;
+		case PRTSV:
+
+			break;
+		case PRTBV:
+
+			break;
+		case PRTCV:
+
+			break;
+		case PUSHI:
+
+			break;
+		case PUSHD:
+
+			break;
+		case PUSHS:
+
+			break;
+		case PUSHB:
+			printf("PUSHB\n");
+
+			break;
+		case PUSHC:
+
+			break;
+		case PUSHKI:
+			valuei = 0;
+			pc++;
+			//value = value | sc[pc++] | sc[pc++] | sc[pc++] | sc[pc];
+			valuei = (valuei << 8) + sc[pc++];
+			valuei = (valuei << 8) + sc[pc++];
+			valuei = (valuei << 8) + sc[pc++];
+			valuei = (valuei << 8) + sc[pc];
+			nodo.tipo = 'i';
+			nodo.dato.entero = valuei;
+			push(stack, nodo);
+			break;
+		case PUSHKD:
+		{
+			valued = 0;
+			pc++;
+			//value = value | sc[pc++] | sc[pc++] | sc[pc++] | sc[pc];
+			char* value = (char*)malloc(8 * sizeof(char));
+			for (int i = 0; i < 8; i++)
+			{
+				value[i] = sc[pc++];
+			}
+			memcpy(&valued, value, sizeof(double));
+			nodo.tipo = 'd';
+			nodo.dato.entero = valued;
+			push(stack, nodo);
+		}
+			break;
+		case PUSHKS:
+
+			break;
+		case PUSHKB:
+			nodo.tipo = 'c';
+			nodo.dato.caracter = sc[++pc];
+			push(stack, nodo);
+			break;
+		case PUSHKC:
+			nodo.tipo = 'c';
+			nodo.dato.caracter = sc[++pc];
+			push(stack, nodo);
+			break;
+		case POPI:
+			if (top(stack).tipo != 'i')
+			{
+				printf("NO INT AT TOP OF STACK.");
+			}
+			dir = (int)((sc[++pc] << 8) | sc[++pc]);
+			
+			break;
+		case POPD:
+			if (top(stack).tipo != 'd')
+			{
+				printf("NO DOUBLE AT TOP OF STACK.");
+			}
+			break;
+		case POPS:
+			if (top(stack).tipo != 's')
+			{
+				printf("NO BOOL AT TOP OF STACK.");
+			}
+			break;
+		case POPB:
+			if (top(stack).tipo != 'c')
+			{
+				printf("NO BOOL AT TOP OF STACK.");
+			}
+			break;
+		case POPC:
+			if (top(stack).tipo != 'c')
+			{
+				printf("NO CHAR AT TOP OF STACK.");
+			}
+			dir = (int)((sc[++pc] << 8) | sc[++pc]);
+
+			break;
+		case POPIV:
+			if (top(stack).tipo != 'i')
+			{
+				printf("NO INT AT TOP OF STACK.");
+			}
+			break;
+		case POPDV:
+			if (top(stack).tipo != 'd')
+			{
+				printf("NO DOUBLE AT TOP OF STACK.");
+			}
+			break;
+		case POPSV:
+			if (top(stack).tipo != 's')
+			{
+				printf("NO STRING AT TOP OF STACK.");
+			}
+			break;
+		case POPBV:
+			if (top(stack).tipo != 'b')
+			{
+				printf("NO BOOL AT TOP OF STACK.");
+			}
+			break;
+		case POPCV:
+			if (top(stack).tipo != 'c')
+			{
+				printf("NO CHAR AT TOP OF STACK.");
+			}
+			break;
+		case SUM:
+			SUMVARS(stack);
+			break;
+		case SUB:
+			SUBVARS(stack);
+			break;
+		case MULT:
+			MULTVARS(stack);
+			break;
+		case DIV:
+			DIVVARS(stack);
+			break;
+		case MOD:
+
+			break;
+		case AND:
+
+			break;
+		case OR:
+
+			break;
+		case XOR:
+
+			break;
+		case MAX:
+			MAXVAR(stack);
+			break;
+		case MIN:
+			MINVAR(stack);
+			break;
+		case INCI:
+			INCVARI(stack);
+			break;
+		case INCD:
+			INCVARD(stack);
+			break;
+		case INCC:
+			INCVARC(stack);
+			break;
+		case DECI:
+			DECVARI(stack);
+			break;
+		case DECD:
+			DECVARD(stack);
+			break;
+		case DECC:
+			DECVARD(stack);
+			break;
+		case BRANCH:
+
+			break;
+		case CMPLE:
+			CMPVARLE(stack);
+			break;
+		case CMPL:
+			CMPVARL(stack);
+			break;
+		case CMPGE:
+			CMPVARGE(stack);
+			break;
+		case CMPG:
+			CMPVARG(stack);
+			break;
+		case CMPE:
+			CMPVARE(stack);
+			break;
+		case CMPNE:
+			CMPVARNE(stack);
+			break;
+		case IDX:
+			index = pop(stack).dato.entero;
+			break;
+		case BRNCHC:
+
+			break;
 
 
-			default:
-				printf("Def\n");
-				
-				break;
+		default:
+			printf("Def\n");
+
+			break;
 		}
 		pc++;
 		running(sc, pc, sd, stack);
