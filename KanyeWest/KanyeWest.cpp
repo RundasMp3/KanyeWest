@@ -98,7 +98,7 @@ void lemmeSee()
 	char* buffer;
 	size_t result;
 
-	pFile = fopen("Test.qki", "rb");
+	pFile = fopen("perhap.ye", "rb");
 	if (pFile == NULL) { fputs("File error", stderr); exit(1); }
 
 
@@ -123,7 +123,7 @@ void lemmeSee()
 	free(buffer);
 
 	typedef unsigned char uint8;
-	std::ifstream source("zoinks.ye", std::ios_base::binary);
+	std::ifstream source("perhap.ye", std::ios_base::binary);
 
 	while (source) {
 		std::ios::pos_type before = source.tellg();
@@ -303,6 +303,10 @@ int compareTo(const char*, char*);
 
 int main(int argc)
 {
+	printf("\nBINARY VALUES\n");
+
+	lemmeSee();
+	printf("\n");
 	FILE* fp;
 	char* buffer = NULL;// [131081];
 	char* sc;
@@ -311,7 +315,7 @@ int main(int argc)
 	st_stack* stack = createStack(100); //struct st_stack stack;
 	long filend;
 
-	fopen_s(&fp, "zoinks.ye", "rb");
+	fopen_s(&fp, "perhap.ye", "rb");
 
 	//char i = fread(buffer, 1, 11, fp);
 	fseek(fp, 0, SEEK_END);
@@ -373,7 +377,7 @@ int main(int argc)
 		printf("ins\t%d\tdir%d\n", sd[i], i);
 	}
 
-	lemmeSee();
+	
 }
 
 
