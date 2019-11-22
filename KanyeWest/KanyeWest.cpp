@@ -81,9 +81,63 @@
 #define BRNCHC 66
 #pragma endregion
 
+void printbinchar(char c)
+{
+	for (int i = 7; i >= 0; --i)
+	{
+		putchar((c & (1 << i)) ? '1' : '0');
+	}
+	putchar('\n');
+}
 
 
-#pragma region stwack uwu
+void lemmeSee()
+{
+	FILE* pFile;
+	long lSize;
+	char* buffer;
+	size_t result;
+
+	pFile = fopen("Test.qki", "rb");
+	if (pFile == NULL) { fputs("File error", stderr); exit(1); }
+
+
+	// obtain file size:
+	fseek(pFile, 0, SEEK_END);
+	lSize = ftell(pFile);
+	rewind(pFile);
+
+	// allocate memory to contain the whole file:
+	buffer = (char*)malloc(sizeof(char) * lSize);
+	if (buffer == NULL) { fputs("Memory error", stderr); exit(2); }
+
+	// copy the file into the buffer:
+	result = fread(buffer, 1, lSize, pFile);
+	if (result != lSize) { fputs("Reading error", stderr); exit(3); }
+
+	/* the whole file is now loaded in the memory buffer. */
+	fread(buffer, 1, 7, pFile);
+
+	// terminate
+	fclose(pFile);
+	free(buffer);
+
+	typedef unsigned char uint8;
+	std::ifstream source("zoinks.ye", std::ios_base::binary);
+
+	while (source) {
+		std::ios::pos_type before = source.tellg();
+		unsigned char x;
+		x = source.get();
+		int int8 = 0;
+		int8 = x;
+		std::cout << int8 << "\t";
+		printbinchar(x);
+		std::ios::pos_type after = source.tellg();
+	}
+}
+
+#pragma region stack uwu
 struct st_node {
 	char tipo;
 	union {
@@ -170,12 +224,12 @@ void printNodeContent(st_node item)
 	}
 }
 
-void printErrthang(st_stack* stack)
+void _stackprintEverything(st_stack* stack)
 {
 	if (!isEmpty(stack))
 	{
 		printNodeContent(pop(stack));
-		return printErrthang(stack);
+		return _stackprintEverything(stack);
 	}
 	else
 		return;
@@ -196,14 +250,14 @@ int Test() {
 	node.dato.doble = 10.3;
 	push(stack, node);
 
-	printErrthang(stack);
+	_stackprintEverything(stack);
 	//printf("%d popped from stack\n", pop(stack).dato.doble);
 
 	return 0;
 }
 #pragma endregion
 
-#pragma region Vawables
+#pragma region Variables
 struct tb_Variable {
 	tb_Variable* Next;
 	short dir;
@@ -271,11 +325,11 @@ int main(int argc)
 	//
 	if (!verificarHeader(buffer))
 	{
-		printf("Howow! Bwad headew smh\n");
+		printf("INVALID HEADER\n");
 	}
 	else
 	{
-		printf("Gwood!\n");
+		printf("VALID FILE\n");
 	}
 
 	//st_stack stack[17];
@@ -313,7 +367,13 @@ int main(int argc)
 
 
 	running(sc, PC, sd, createStack(100));
+	printf("DATA SEGMENT\n");
+	for (int i = 0; i < TSD; i++)
+	{
+		printf("ins\t%d\tdir%d\n", sd[i], i);
+	}
 
+	lemmeSee();
 }
 
 
@@ -429,11 +489,11 @@ void LeerYEscribirDoubleenDir(char* sd, int dir)
 	printf("%d", bytes[0]);
 	printf("%d", bytes[3]);
 	printf("\n");
-	printf("DATA SEGMENT\n");
+	/*printf("DATA SEGMENT\n");
 	for (int i = 0; i < 4; i++)
 	{
 		printf("ins\t%d\tdir%d\n", sd[i], i);
-	}
+	}*/
 }
 
 void LeerYEscribirCharenDir(char* sd, int dir)
@@ -452,13 +512,8 @@ void LeerYEscribirCharenDir(char* sd, int dir)
 	sd[dir++] = n;
 
 
-	printf("%a", n);
-	printf("\n");
-	printf("DATA SEGMENT\n");
-	for (int i = 0; i < 4; i++)
-	{
-		printf("ins\t%d\tdir%d\n", sd[i], i);
-	}
+	
+	
 }
 
 
@@ -531,6 +586,8 @@ void EscribirDoubleenDir(double n, char* sd, int dir)
 	{
 		printf("ins\t%d\tdir%d\n", sd[i], i);
 	}
+
+	
 }
 
 void EscribirCharenDir(unsigned char n, char* sd, int dir)
@@ -585,7 +642,7 @@ void SUMVARS(st_stack* stack)
 {
 	st_node nodo = pop(stack);
 	st_node aux = pop(stack);
-	switch (nodo.tipo)
+	switch (aux.tipo)
 	{
 	case 'i':
 		nodo.dato.entero += aux.dato.entero;
@@ -1193,13 +1250,7 @@ void CMPVARNE(st_stack* stack)
 
 void running(char* sc, int pc, char* sd, st_stack* stack)
 {
-	printf("BACK IN CYCLE \n");
-	for (int i = 0; i <= 16; i++)
-	{
-		printf("ins\t%d\tdir%d\n", sc[i], i);
-
-	}
-	printf("CURRENTLY Running\tins %d\tdir %d\n", sc[pc], pc);
+	printf("CURRENTLY RUNNING:\t%d\tdir %d\n", sc[pc], pc);
 	if (sc[pc] != EFE)
 	{
 		int dir = 0;
@@ -1238,12 +1289,12 @@ void running(char* sc, int pc, char* sd, st_stack* stack)
 			break;
 		case RDIV:
 			dir = (int)((sc[++pc] << 8) | sc[++pc]);
-			dir += index;
+			dir += index * 4;
 			LeerYEscribirIntenDir(sd, dir);
 			break;
 		case RDDV:
 			dir = (int)((sc[++pc] << 8) | sc[++pc]);
-			dir += index;
+			dir += index * 8;
 			LeerYEscribirDoubleenDir(sd, dir);
 			break;
 		case RDSV:
@@ -1253,12 +1304,13 @@ void running(char* sc, int pc, char* sd, st_stack* stack)
 			break;
 		case RDBV:
 			dir = (int)((sc[++pc] << 8) | sc[++pc]);
-			dir += index;
+			dir += index * 1;
 			LeerYEscribirCharenDir(sd, dir);
 			break;
 		case RDCV:
 			dir = (int)((sc[++pc] << 8) | sc[++pc]);
-			dir += index;
+			dir += index * 1;
+			
 			LeerYEscribirCharenDir(sd, dir);
 			break;
 		case PRTM:
@@ -1325,16 +1377,16 @@ void running(char* sc, int pc, char* sd, st_stack* stack)
 		case PUSHKD:
 		{
 			valued = 0;
-			pc++;
+			//pc++;
 			//value = value | sc[pc++] | sc[pc++] | sc[pc++] | sc[pc];
 			char* value = (char*)malloc(8 * sizeof(char));
 			for (int i = 0; i < 8; i++)
 			{
-				value[i] = sc[pc++];
+				value[i] = sc[++pc];
 			}
 			memcpy(&valued, value, sizeof(double));
 			nodo.tipo = 'd';
-			nodo.dato.entero = valued;
+			nodo.dato.doble = valued;
 			push(stack, nodo);
 		}
 			break;
@@ -1493,7 +1545,7 @@ void running(char* sc, int pc, char* sd, st_stack* stack)
 
 
 		default:
-			printf("Def\n");
+			printf("UNKNOWN INS\n");
 
 			break;
 		}
@@ -1502,6 +1554,10 @@ void running(char* sc, int pc, char* sd, st_stack* stack)
 	}
 	else
 	{
+		printf("STACK CONTENT\n");
+		_stackprintEverything(stack);
+		printf("\n");
 		return;
+		
 	}
 }
