@@ -645,30 +645,147 @@ void ConvertDoubleToByte(double* n, std::ofstream& outfile)
 void SUMVARS(st_stack* stack)
 {
 	st_node nodo = pop(stack);
-	st_node aux = pop(stack);
-	switch (aux.tipo)
+	st_node nodo2 = pop(stack);
+	st_node aux;
+	if (nodo.tipo == 's')
 	{
-	case 'i':
-		nodo.dato.entero += aux.dato.entero;
-		printf("SUMVALUE:\t%d", nodo.dato.entero);
+		switch (nodo2.tipo)
+		{
+		case 'i':
+		{
+			char* integer_string = (char*)malloc(10 * sizeof(char));
+			sprintf(integer_string, "%d", nodo2.dato.entero);
+			aux.dato.apuntador = (char*)malloc(sizeof(nodo.dato.apuntador) + sizeof(integer_string));
+			strcpy(aux.dato.apuntador, nodo.dato.apuntador);
+			strcat(aux.dato.apuntador, integer_string);
+			aux.tipo = 's';
+		}
+		break;
+		case 'd':
+		{
+		char* double_string = (char*)malloc(255*sizeof(char) - sizeof(nodo.dato.apuntador));
+		if(sizeof(nodo))
+		sprintf(double_string, "%.10G", nodo2.dato.doble);
+		aux.dato.apuntador = (char*)malloc(sizeof(nodo.dato.apuntador) + sizeof(double_string));
+		strcpy(aux.dato.apuntador, nodo.dato.apuntador);
+		strcat(aux.dato.apuntador, double_string);
+		aux.tipo = 's';
+		}
+			break;
+		case 'c':
+			aux.dato.apuntador = (char*)malloc(sizeof(nodo.dato.apuntador) + sizeof(nodo2.dato.caracter));
+			aux.dato.apuntador[sizeof(nodo.dato.apuntador)] = nodo2.dato.caracter;
+			aux.tipo = 's';
+			break;
+		case 's':
+			aux.dato.apuntador = (char*)malloc(sizeof(nodo.dato.apuntador) + sizeof(nodo2.dato.apuntador));
+			strcpy(aux.dato.apuntador, nodo.dato.apuntador);
+			strcat(aux.dato.apuntador, nodo2.dato.apuntador);
+			aux.tipo = 's';
+			
+			//TODO: SUM string
+			break;
+		
+		default:
+			break;
+		}
+	}
+	else if (nodo2.tipo == 's')
+	{
+		switch (nodo.tipo)
+		{
+		case 'i':
+		{
+			char* integer_string = (char*)malloc(10 * sizeof(char));
+			sprintf(integer_string, "%d", nodo.dato.entero);
+			aux.dato.apuntador = (char*)malloc(sizeof(nodo2.dato.apuntador) + sizeof(integer_string));
+			strcpy(aux.dato.apuntador, nodo2.dato.apuntador);
+			strcat(aux.dato.apuntador, integer_string);
+			aux.tipo = 's';
+		}
+			break;
+		case 'd':
+		{
+			char* double_string = (char*)malloc(10 * sizeof(char));
+			sprintf(double_string, "%.10G", nodo.dato.doble);
+			aux.dato.apuntador = (char*)malloc(sizeof(nodo2.dato.apuntador) + sizeof(double_string));
+			strcpy(aux.dato.apuntador, nodo2.dato.apuntador);
+			strcat(aux.dato.apuntador, double_string);
+			aux.tipo = 's';
+		}
+			break;
+		case 'c':
+			aux.dato.apuntador = (char*)malloc(sizeof(nodo2.dato.apuntador) + sizeof(nodo.dato.caracter));
+			strcpy(aux.dato.apuntador, nodo2.dato.apuntador);
+			aux.dato.apuntador[sizeof(nodo2.dato.apuntador)] = nodo.dato.caracter;
+			aux.tipo = 's';
+			break;
 
-		break;
-	case 'd':
-		nodo.dato.doble += aux.dato.doble;
-		printf("SUMVALUE:\t%f", nodo.dato.doble);
-
-		break;
-	case 'c':
-		nodo.dato.caracter += aux.dato.caracter;
-		printf("SUMVALUE:\t%a", nodo.dato.caracter);
-
-		break;
-	case 's':
-		//TODO: SUM string
-		break;
+		default:
+			break;
+		}
+	
+	}
+	else if (nodo.tipo == 'd')
+	{
+		if (nodo2.tipo == 'i')
+		{
+			aux.dato.doble = nodo.dato.doble + (double)nodo2.dato.entero;
+			aux.tipo = 'd';
+		}
+		else if (nodo2.tipo == 'd')
+		{
+			aux.dato.doble = nodo.dato.doble + nodo2.dato.doble;
+		}
+		else if (nodo2.tipo == 'c')
+		{
+			aux.dato.doble = nodo.dato.doble + (double)nodo2.dato.caracter;
+		}
 
 	}
-	push(stack, nodo);
+	else if (nodo2.tipo == 'd')
+	{
+		if (nodo.tipo == 'i')
+		{
+			aux.dato.doble = nodo2.dato.doble + (double)nodo.dato.entero;
+			aux.tipo = 'd';
+		}
+		else if (nodo.tipo == 'd')
+		{
+			aux.dato.doble = nodo2.dato.doble + nodo.dato.doble;
+			aux.tipo = 'd';
+		}
+		else if (nodo.tipo == 'c')
+		{
+			aux.dato.doble = nodo2.dato.doble + (double)nodo.dato.caracter;
+			aux.tipo = 'd';
+		}
+	}
+	else if (nodo.tipo == 'i')
+	{
+		if(nodo2.tipo == 'i')
+		{
+			aux.tipo = 'i';
+			aux.dato.entero = nodo.dato.entero + nodo2.dato.entero;
+		}
+		else if (nodo2.tipo == 'c')
+		{
+			aux.tipo = 'i';
+			aux.dato.entero = nodo.dato.entero + (int)nodo2.dato.caracter;
+		}
+	}
+	else if (nodo2.tipo == 'i')
+	{
+		aux.tipo = 'i';
+		aux.dato.entero = (int)nodo.dato.caracter + nodo2.dato.entero;
+	}
+	else
+	{
+		aux.tipo = 'c';
+		aux.dato.caracter = nodo.dato.caracter + nodo2.dato.caracter;
+	}
+	
+	push(stack, aux);
 }
 
 void SUBVARS(st_stack* stack)
@@ -1252,6 +1369,50 @@ void CMPVARNE(st_stack* stack)
 	}
 }
 
+void PRTVAR(int dir, char* sd, char type)
+{
+	switch (type)
+	{
+	case 'i':
+	{
+		int valuei = 0;
+		valuei = (valuei << 8) + sd[dir++];
+		valuei = (valuei << 8) + sd[dir++];
+		valuei = (valuei << 8) + sd[dir++];
+		valuei = (valuei << 8) + sd[dir];
+		printf("%d", valuei);
+	}
+		break;
+	case 'd':
+	{
+		double valued = 0;
+		//pc++;
+		//value = value | sc[pc++] | sc[pc++] | sc[pc++] | sc[pc];
+		char* value = (char*)malloc(8 * sizeof(char));
+		for (int i = 0; i < 8; i++)
+		{
+			value[i] = sd[++dir];
+		}
+		memcpy(&valued, value, sizeof(double));
+		printf("%f", valued);
+	}
+		break;
+	case 'c':
+		printf("%a", sd[dir]);
+		break;
+	case 's':
+		char* str = (char*)malloc(256 * sizeof(char));
+		for (int i = 0; i < 256; i++)
+		{
+			str[i] = sd[i + dir];
+		}
+		printf("%a", str);
+		break;
+	default:
+		break;
+	}
+}
+
 void running(char* sc, int pc, char* sd, st_stack* stack)
 {
 	printf("CURRENTLY RUNNING:\t%d\tdir %d\n", sc[pc], pc);
@@ -1318,53 +1479,111 @@ void running(char* sc, int pc, char* sd, st_stack* stack)
 			LeerYEscribirCharenDir(sd, dir);
 			break;
 		case PRTM:
-
+			dir = (int)(sc[++pc]); //Aqui se usa para ver el tamaño del string
+			for (int i = 0; i < dir; i++)
+			{
+				printf("%a", sc[++pc]);
+			}
 			break;
 		case PRTI:
-
+			dir = (int)((sc[++pc] << 8) | sc[++pc]);
+			PRTVAR(dir, sd, 'i');
 			break;
 		case PRTD:
-
+			dir = (int)((sc[++pc] << 8) | sc[++pc]);
+			PRTVAR(dir, sd, 'd');
 			break;
 		case PRTS:
-
+			dir = (int)((sc[++pc] << 8) | sc[++pc]);
+			PRTVAR(dir, sd, 's');
 			break;
 		case PRTB:
-
+			dir = (int)((sc[++pc] << 8) | sc[++pc]);
+			PRTVAR(dir, sd, 'c');
 			break;
 		case PRTC:
-
+			dir = (int)((sc[++pc] << 8) | sc[++pc]);
+			PRTVAR(dir, sd, 'c');
 			break;
 		case PRTIV:
-
+			dir = (int)((sc[++pc] << 8) | sc[++pc]);
+			dir += 4 * index;
+			PRTVAR(dir, sd, 'i');
 			break;
 		case PRTDV:
-
+			dir = (int)((sc[++pc] << 8) | sc[++pc]);
+			dir += 8 * index;
+			PRTVAR(dir, sd, 'd');
 			break;
 		case PRTSV:
-
+			dir = (int)((sc[++pc] << 8) | sc[++pc]);
+			dir += 255 * index;
+			PRTVAR(dir, sd, 's');
 			break;
 		case PRTBV:
-
+			dir = (int)((sc[++pc] << 8) | sc[++pc]);
+			dir += index;
+			PRTVAR(dir, sd, 'c');
 			break;
 		case PRTCV:
-
+			dir = (int)((sc[++pc] << 8) | sc[++pc]);
+			dir += index;
+			PRTVAR(dir, sd, 'c');
 			break;
 		case PUSHI:
-
+			valuei = 0;
+			dir = (int)((sc[++pc] << 8) | sc[++pc]);
+			//value = value | sc[pc++] | sc[pc++] | sc[pc++] | sc[pc];
+			valuei = (valuei << 8) + sd[dir++];
+			valuei = (valuei << 8) + sd[dir++];
+			valuei = (valuei << 8) + sd[dir++];
+			valuei = (valuei << 8) + sd[dir];
+			nodo.tipo = 'i';
+			nodo.dato.entero = valuei;
+			push(stack, nodo);
 			break;
 		case PUSHD:
-
+		{
+			valued = 0;
+			dir = (int)((sc[++pc] << 8) | sc[++pc]);
+			//pc++;
+			//value = value | sc[pc++] | sc[pc++] | sc[pc++] | sc[pc];
+			char* value = (char*)malloc(8 * sizeof(char));
+			for (int i = 0; i < 8; i++)
+			{
+				value[i] = sd[++dir];
+			}
+			memcpy(&valued, value, sizeof(double));
+			nodo.tipo = 'd';
+			nodo.dato.doble = valued;
+			push(stack, nodo);
+		}
 			break;
 		case PUSHS:
-
+			dir = (int)((sc[++pc] << 8) | sc[++pc]);
+			nodo.tipo = 's';
+			nodo.dato.apuntador = (char*)malloc(255 * sizeof(char));
+			push(stack, nodo);
+			for (int i = 0; i < 255; i++)
+			{
+				nodo.dato.apuntador[i] = sd[dir++];
+			}
+			push(stack, nodo);
 			break;
 		case PUSHB:
-			printf("PUSHB\n");
+			dir = (int)((sc[++pc] << 8) | sc[++pc]);
+
+			nodo.tipo = 'c';
+			nodo.dato.caracter = sd[dir];
+			push(stack, nodo);
 
 			break;
 		case PUSHC:
+			dir = (int)((sc[++pc] << 8) | sc[++pc]);
 
+			nodo.tipo = 'c';
+			nodo.dato.caracter = sd[dir];
+			push(stack, nodo);
 			break;
 		case PUSHKI:
 			valuei = 0;
@@ -1395,7 +1614,14 @@ void running(char* sc, int pc, char* sd, st_stack* stack)
 		}
 			break;
 		case PUSHKS:
-
+			nodo.tipo = 's';
+			nodo.dato.apuntador = (char*)malloc(255 * sizeof(char));
+			push(stack, nodo);
+			for (int i = 0; i < 255; i++)
+			{
+				nodo.dato.apuntador[i] = sc[++pc];
+			}
+			push(stack, nodo);
 			break;
 		case PUSHKB:
 			nodo.tipo = 'c';
@@ -1413,25 +1639,35 @@ void running(char* sc, int pc, char* sd, st_stack* stack)
 				printf("NO INT AT TOP OF STACK.");
 			}
 			dir = (int)((sc[++pc] << 8) | sc[++pc]);
-			
+			nodo = pop(stack);
+			EscribirIntenDir(nodo.dato.entero, sd, dir);
 			break;
 		case POPD:
 			if (top(stack).tipo != 'd')
 			{
 				printf("NO DOUBLE AT TOP OF STACK.");
 			}
+			dir = (int)((sc[++pc] << 8) | sc[++pc]);
+			nodo = pop(stack);
+			EscribirDoubleenDir(nodo.dato.doble, sd, dir);
 			break;
 		case POPS:
 			if (top(stack).tipo != 's')
 			{
 				printf("NO BOOL AT TOP OF STACK.");
 			}
+			dir = (int)((sc[++pc] << 8) | sc[++pc]);
+			nodo = pop(stack);
+			//EscribirIntenDir(nodo.dato.apuntador, sd, dir); //TODO: POP STRING
 			break;
 		case POPB:
 			if (top(stack).tipo != 'c')
 			{
 				printf("NO BOOL AT TOP OF STACK.");
 			}
+			dir = (int)((sc[++pc] << 8) | sc[++pc]);
+			nodo = pop(stack);
+			EscribirCharenDir(nodo.dato.caracter, sd, dir);
 			break;
 		case POPC:
 			if (top(stack).tipo != 'c')
@@ -1439,37 +1675,58 @@ void running(char* sc, int pc, char* sd, st_stack* stack)
 				printf("NO CHAR AT TOP OF STACK.");
 			}
 			dir = (int)((sc[++pc] << 8) | sc[++pc]);
-
+			nodo = pop(stack);
+			EscribirCharenDir(nodo.dato.caracter, sd, dir);
 			break;
 		case POPIV:
 			if (top(stack).tipo != 'i')
 			{
 				printf("NO INT AT TOP OF STACK.");
 			}
+			dir = (int)((sc[++pc] << 8) | sc[++pc]);
+			dir += index * 4;
+			nodo = pop(stack);
+			EscribirIntenDir(nodo.dato.entero, sd, dir);
 			break;
 		case POPDV:
 			if (top(stack).tipo != 'd')
 			{
 				printf("NO DOUBLE AT TOP OF STACK.");
 			}
+			dir = (int)((sc[++pc] << 8) | sc[++pc]);
+			dir += 8 * index;
+			nodo = pop(stack);
+			EscribirDoubleenDir(nodo.dato.doble, sd, dir);
 			break;
 		case POPSV:
 			if (top(stack).tipo != 's')
 			{
 				printf("NO STRING AT TOP OF STACK.");
 			}
+			dir = (int)((sc[++pc] << 8) | sc[++pc]);
+			dir += 255 * index;
+			nodo = pop(stack);
+			//EscribirDoubleenDir(nodo.dato.doble, sd, dir);
 			break;
 		case POPBV:
 			if (top(stack).tipo != 'b')
 			{
 				printf("NO BOOL AT TOP OF STACK.");
 			}
+			dir = (int)((sc[++pc] << 8) | sc[++pc]);
+			dir += index;
+			nodo = pop(stack);
+			EscribirCharenDir(nodo.dato.caracter, sd, dir);
 			break;
 		case POPCV:
 			if (top(stack).tipo != 'c')
 			{
 				printf("NO CHAR AT TOP OF STACK.");
 			}
+			dir = (int)((sc[++pc] << 8) | sc[++pc]);
+			dir += index;
+			nodo = pop(stack);
+			EscribirCharenDir(nodo.dato.caracter, sd, dir);
 			break;
 		case SUM:
 			SUMVARS(stack);
@@ -1544,7 +1801,12 @@ void running(char* sc, int pc, char* sd, st_stack* stack)
 			index = pop(stack).dato.entero;
 			break;
 		case BRNCHC:
-
+			dir = (int)((sc[++pc] << 8) | sc[++pc]);
+			nodo = pop(stack);
+			if (nodo.dato.caracter == true)
+			{
+				pc = dir;
+			}
 			break;
 
 
