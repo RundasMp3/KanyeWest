@@ -301,7 +301,7 @@ bool loadFile();
 void running(char*, int, char*, st_stack*);
 int compareTo(const char*, char*);
 
-int main(int argc)
+int main(int argc, char** argv)
 {
 	printf("\nBINARY VALUES\n");
 
@@ -315,7 +315,7 @@ int main(int argc)
 	st_stack* stack = createStack(100); //struct st_stack stack;
 	long filend;
 
-	fopen_s(&fp, "perhap.ye", "rb");
+	fopen_s(&fp, "C:\\Users\\beto_\\Downloads\\zoinksWhileImprimirBuenPointer.ye", "rb");
 
 	//char i = fread(buffer, 1, 11, fp);
 	fseek(fp, 0, SEEK_END);
@@ -1401,12 +1401,14 @@ void PRTVAR(int dir, char* sd, char type)
 		printf("%a", sd[dir]);
 		break;
 	case 's':
-		char* str = (char*)malloc(256 * sizeof(char));
+	{
+		char* str = (char*)malloc(255 * sizeof(char));
 		for (int i = 0; i < 256; i++)
 		{
 			str[i] = sd[i + dir];
 		}
 		printf("%a", str);
+	}
 		break;
 	default:
 		break;
@@ -1744,10 +1746,32 @@ void running(char* sc, int pc, char* sd, st_stack* stack)
 
 			break;
 		case AND:
-
+		{
+			nodo.tipo = 'c';
+			nodo.dato.caracter = pop(stack).dato.caracter & pop(stack).dato.caracter;
+			if (nodo.dato.caracter == true)
+			{
+				printf("true");
+			}
+			else if (nodo.dato.caracter == false)
+			{
+				printf("false");
+			}
+			push(stack, nodo);
+		}
 			break;
 		case OR:
-
+			nodo.tipo = 'c';
+			nodo.dato.caracter = pop(stack).dato.caracter | pop(stack).dato.caracter;
+			if (nodo.dato.caracter == true)
+			{
+				printf("true");
+			}
+			else if (nodo.dato.caracter == false)
+			{
+				printf("false");
+			}
+			push(stack, nodo);
 			break;
 		case XOR:
 
@@ -1801,11 +1825,12 @@ void running(char* sc, int pc, char* sd, st_stack* stack)
 			index = pop(stack).dato.entero;
 			break;
 		case BRNCHC:
-			dir = (int)((sc[++pc] << 8) | sc[++pc]);
+			dir = (int)((sc[++pc]) | sc[++pc]);;
 			nodo = pop(stack);
 			if (nodo.dato.caracter == true)
 			{
 				pc = dir;
+				pc--;
 			}
 			break;
 
