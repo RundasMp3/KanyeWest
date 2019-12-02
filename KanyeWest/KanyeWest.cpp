@@ -219,7 +219,7 @@ void printNodeContent(st_node item)
 		printf("%f top of stack\n", item.dato.doble);
 		break;
 	case 's':
-		printf("%d top of stack\n", item.dato.dir);
+		printf("%s top of stack\n", item.dato.apuntador);
 		break;
 	}
 }
@@ -303,10 +303,10 @@ int compareTo(const char*, char*);
 
 int main(int argc, char** argv)
 {
-	printf("\nBINARY VALUES\n");
+	/*printf("\nBINARY VALUES\n");
 
 	lemmeSee();
-	printf("\n");
+	printf("\n");*/
 	FILE* fp;
 	char* buffer = NULL;// [131081];
 	char* sc;
@@ -315,7 +315,7 @@ int main(int argc, char** argv)
 	st_stack* stack = createStack(100); //struct st_stack stack;
 	long filend;
 
-	fopen_s(&fp, "C:\\Users\\beto_\\Downloads\\zoinksWhileMejorBranch.ye", "rb");
+	fopen_s(&fp, "C:\\Users\\beto_\\Downloads\\zoinksForSemiTest (1).ye", "rb");
 
 	//char i = fread(buffer, 1, 11, fp);
 	fseek(fp, 0, SEEK_END);
@@ -333,7 +333,7 @@ int main(int argc, char** argv)
 	}
 	else
 	{
-		printf("VALID FILE\n");
+		//printf("VALID FILE\n");
 	}
 
 	//st_stack stack[17];
@@ -349,19 +349,19 @@ int main(int argc, char** argv)
 		sc[i] = buffer[i + 11];
 		printf("ins\t%d\tdir%d\n", sc[i], i);
 	}
-	printf("\n");
+	/*printf("\n");
 	for (int i = 0; i < TSD; i++)
 	{
 		printf("ins\t%d\tdir%d\n", sd[i], i);
-	}
+	}*/
 	printf("\n");
 
 	if (sc == NULL) {
-		printf("Memory not allocated.\n");
+		printf("Memory not allocated for code segment.\n");
 		exit(0);
 	}
 	if (sd == NULL) {
-		printf("Memory not allocated.\n");
+		printf("Memory not allocated for data segment.\n");
 		exit(0);
 	}
 
@@ -371,11 +371,11 @@ int main(int argc, char** argv)
 
 
 	running(sc, PC, sd, createStack(100));
-	printf("DATA SEGMENT\n");
+	/*printf("DATA SEGMENT\n");
 	for (int i = 0; i < TSD; i++)
 	{
 		printf("ins\t%d\tdir%d\n", sd[i], i);
-	}
+	}*/
 
 	
 }
@@ -434,17 +434,18 @@ void LeerYEscribirIntenDir(char* sd, int dir)
 	unsigned int n;
 	scanf_s("%d", &n);
 	//Get each byte value from int.
-	bytes[3] = (n >> 24) & 0x000000FF;
-	bytes[2] = (n >> 16) & 0x0000FF00;
-	bytes[1] = (n >> 8) & 0x00FF0000;
+	
+	bytes[3] = (n >> 24) & 0xFF;
+	bytes[2] = (n >> 16) & 0xFF;
+	bytes[1] = (n >> 8) & 0xFF;
 	bytes[0] = n & 0xFF;
 
 	int Int32 = 0;
 
-	/*Int32 = (Int32 << 8) + bytes[3]; //UNCOMMENT TO DEBUG VALUE
+	Int32 = (Int32 << 8) + bytes[3]; //UNCOMMENT TO DEBUG VALUE
 	Int32 = (Int32 << 8) + bytes[2];
 	Int32 = (Int32 << 8) + bytes[1];
-	Int32 = (Int32 << 8) + bytes[0];*/
+	Int32 = (Int32 << 8) + bytes[0];
 
 	sd[dir++] = bytes[3];
 	sd[dir++] = bytes[2];
@@ -452,14 +453,14 @@ void LeerYEscribirIntenDir(char* sd, int dir)
 	sd[dir++] = bytes[0];
 
 	Int32 = bytes[0] | bytes[1] | bytes[2] | bytes[3];
-	printf("%d", bytes[0]);
+	/*printf("%d", bytes[0]);
 	printf("%d", bytes[3]);
 	printf("\n");
 	printf("DATA SEGMENT\n");
 	for (int i = 0; i < 4; i++)
 	{
 		printf("ins\t%d\tdir%d\n", sd[i], i);
-	}
+	}*/
 }
 
 void LeerYEscribirDoubleenDir(char* sd, int dir)
@@ -490,9 +491,9 @@ void LeerYEscribirDoubleenDir(char* sd, int dir)
 	sd[dir++] = bytes[0];
 
 	Int32 = bytes[0] | bytes[1] | bytes[2] | bytes[3];
-	printf("%d", bytes[0]);
+	/*printf("%d", bytes[0]);
 	printf("%d", bytes[3]);
-	printf("\n");
+	printf("\n");*/
 	/*printf("DATA SEGMENT\n");
 	for (int i = 0; i < 4; i++)
 	{
@@ -526,9 +527,9 @@ void EscribirIntenDir(unsigned int n, char* sd, int dir)
 	unsigned char bytes[4];
 	//unsigned int n;
 	//Get each byte value from int.
-	bytes[3] = (n >> 24) & 0x000000FF;
-	bytes[2] = (n >> 16) & 0x0000FF00;
-	bytes[1] = (n >> 8) & 0x00FF0000;
+	bytes[3] = (n >> 24) & 0xFF;
+	bytes[2] = (n >> 16) & 0xFF;
+	bytes[1] = (n >> 8) & 0xFF;
 	bytes[0] = n & 0xFF;
 
 	int Int32 = 0;
@@ -582,14 +583,14 @@ void EscribirDoubleenDir(double n, char* sd, int dir)
 	sd[dir++] = bytes[0];
 
 	Int32 = bytes[0] | bytes[1] | bytes[2] | bytes[3];
-	printf("%d", bytes[0]);
+	/*printf("%d", bytes[0]);
 	printf("%d", bytes[3]);
 	printf("\n");
 	printf("DATA SEGMENT\n");
 	for (int i = 0; i < 4; i++)
 	{
 		printf("ins\t%d\tdir%d\n", sd[i], i);
-	}
+	}*/
 
 	
 }
@@ -608,13 +609,13 @@ void EscribirCharenDir(unsigned char n, char* sd, int dir)
 	sd[dir++] = n;
 
 
-	printf("%a", n);
-	printf("\n");
-	printf("DATA SEGMENT\n");
-	for (int i = 0; i < 4; i++)
-	{
-		printf("ins\t%d\tdir%d\n", sd[i], i);
-	}
+	//printf("%a", n);
+	//printf("\n");
+	//printf("DATA SEGMENT\n");
+	//for (int i = 0; i < 4; i++)
+	//{
+	//	printf("ins\t%d\tdir%d\n", sd[i], i);
+	//}
 }
 
 void ConvertShortToByte(unsigned int n, std::ofstream& outfile)
@@ -796,17 +797,14 @@ void SUBVARS(st_stack* stack)
 	{
 	case 'i':
 		nodo.dato.entero -= aux.dato.entero;
-		printf("SUB VALUE:\t%d", nodo.dato.entero);
 
 		break;
 	case 'd':
 		nodo.dato.doble -= aux.dato.doble;
-		printf("SUB VALUE:\t%f", nodo.dato.doble);
 
 		break;
 	case 'c':
 		nodo.dato.caracter -= aux.dato.caracter;
-		printf("SUB VALUE:\t%a", nodo.dato.caracter);
 
 		break;
 	case 's':
@@ -825,17 +823,14 @@ void MULTVARS(st_stack* stack)
 	{
 	case 'i':
 		nodo.dato.entero *= aux.dato.entero;
-		printf("MULT VALUE:\t%d", nodo.dato.entero);
 
 		break;
 	case 'd':
 		nodo.dato.doble *= aux.dato.doble;
-		printf("MULT VALUE:\t%f", nodo.dato.doble);
 
 		break;
 	case 'c':
 		nodo.dato.caracter *= aux.dato.caracter;
-		printf("MULT VALUE:\t%a", nodo.dato.caracter);
 
 		break;
 	case 's':
@@ -854,17 +849,14 @@ void DIVVARS(st_stack* stack)
 	{
 	case 'i':
 		nodo.dato.entero /= aux.dato.entero;
-		printf("DIV VALUE:\t%d", nodo.dato.entero);
 
 		break;
 	case 'd':
 		nodo.dato.doble /= aux.dato.doble;
-		printf("DIV VALUE:\t%f", nodo.dato.doble);
 
 		break;
 	case 'c':
 		nodo.dato.caracter /= aux.dato.caracter;
-		printf("DIV VALUE:\t%a", nodo.dato.caracter);
 
 		break;
 	case 's':
@@ -971,7 +963,7 @@ void INCVARI(st_stack* stack)
 {
 	st_node nodo = pop(stack);
 	nodo.dato.entero++;
-	printf("SUMVALUE:\t%d", nodo.dato.entero);
+	//printf("SUMVALUE:\t%d", nodo.dato.entero);
 	push(stack, nodo);
 }
 
@@ -979,7 +971,7 @@ void INCVARD(st_stack* stack)
 {
 	st_node nodo = pop(stack);
 	nodo.dato.doble++;
-	printf("SUMVALUE:\t%f", nodo.dato.doble);
+	//printf("SUMVALUE:\t%f", nodo.dato.doble);
 	push(stack, nodo);
 }
 
@@ -987,7 +979,7 @@ void INCVARC(st_stack* stack)
 {
 	st_node nodo = pop(stack);
 	nodo.dato.caracter++;
-	printf("SUMVALUE:\t%a", nodo.dato.doble);
+	//printf("SUMVALUE:\t%a", nodo.dato.doble);
 	push(stack, nodo);
 }
 
@@ -995,7 +987,7 @@ void DECVARI(st_stack* stack)
 {
 	st_node nodo = pop(stack);
 	nodo.dato.entero--;
-	printf("SUMVALUE:\t%d", nodo.dato.entero);
+	//printf("SUMVALUE:\t%d", nodo.dato.entero);
 	push(stack, nodo);
 }
 
@@ -1003,7 +995,7 @@ void DECVARD(st_stack* stack)
 {
 	st_node nodo = pop(stack);
 	nodo.dato.doble--;
-	printf("SUMVALUE:\t%f", nodo.dato.doble);
+	//printf("SUMVALUE:\t%f", nodo.dato.doble);
 	push(stack, nodo);
 }
 
@@ -1011,7 +1003,7 @@ void DECVARC(st_stack* stack)
 {
 	st_node nodo = pop(stack);
 	nodo.dato.caracter--;
-	printf("SUMVALUE:\t%a", nodo.dato.doble);
+	//printf("SUMVALUE:\t%a", nodo.dato.doble);
 	push(stack, nodo);
 }
 
@@ -1417,7 +1409,7 @@ void PRTVAR(int dir, char* sd, char type)
 
 void running(char* sc, int pc, char* sd, st_stack* stack)
 {
-	printf("CURRENTLY RUNNING:\t%d\tdir %d\n", sc[pc], pc);
+	//printf("CURRENTLY RUNNING:\t%d\tdir %d\n", sc[pc], pc);
 	if (sc[pc] != EFE)
 	{
 		int dir = 0;
@@ -1439,7 +1431,6 @@ void running(char* sc, int pc, char* sd, st_stack* stack)
 			pc += 2;
 
 			LeerYEscribirIntenDir(sd, dir);
-			break;
 			break;
 		case RDS:
 			dir = (int)((sc[pc + 1] << 8) | sc[pc + 2]);
@@ -1492,9 +1483,9 @@ void running(char* sc, int pc, char* sd, st_stack* stack)
 			break;
 		case PRTM:
 			dir = (int)(sc[++pc]); //Aqui se usa para ver el tamaño del string
-			for (int i = 0; i < dir; i++)
+			for (int i = 0; i <= dir; i++)
 			{
-				printf("%a", sc[++pc]);
+				printf("%c", (char)sc[++pc]);
 			}
 			break;
 		case PRTI:
@@ -1661,9 +1652,10 @@ void running(char* sc, int pc, char* sd, st_stack* stack)
 			push(stack, nodo);
 			break;
 		case POPI:
+			nodo = top(stack);
 			if (top(stack).tipo != 'i')
 			{
-				printf("NO INT AT TOP OF STACK.");
+				printf("NO INT AT TOP OF STACK.\n");
 			}
 			dir = (int)((sc[pc+1] << 8) | sc[pc+2]);
 			pc += 2;
@@ -1886,9 +1878,9 @@ void running(char* sc, int pc, char* sd, st_stack* stack)
 	}
 	else
 	{
-		printf("STACK CONTENT\n");
+		/*printf("STACK CONTENT\n");
 		_stackprintEverything(stack);
-		printf("\n");
+		printf("\n");*/
 		return;
 		
 	}
