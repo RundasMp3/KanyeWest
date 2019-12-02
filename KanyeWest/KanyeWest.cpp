@@ -306,7 +306,7 @@ bool loadFile();
 void running(unsigned char*, int,unsigned char*, st_stack*);
 int compareTo(const char*, char*);
 
-int main(char** argv)
+int main(char* argv)
 {
 	/*printf("\nBINARY VALUES\n");
 
@@ -319,8 +319,7 @@ int main(char** argv)
 	//errno_t err;
 	st_stack* stack = createStack(100); //struct st_stack stack;
 	long filend;
-
-	fopen_s(&fp, "C:\\Users\\beto_\\Downloads\\bubbleEsNuestraMobyDick.ye", "rb");
+	fopen_s(&fp, argv, "rb");
 
 	//char i = fread(buffer, 1, 11, fp);
 	fseek(fp, 0, SEEK_END);
