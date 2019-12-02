@@ -79,6 +79,11 @@
 #define CMPNE 64
 #define IDX 65
 #define BRNCHC 66
+#define PUSHIV 67
+#define PUSHDV 68
+#define PUSHSV 69
+#define PUSHBV 70
+#define PUSHCV 71
 #pragma endregion
 
 void printbinchar(char c)
@@ -298,10 +303,10 @@ int index = 0;
 int verificarHeader(char*);
 int ConvertirShortInt(char*);
 bool loadFile();
-void running(char*, int, char*, st_stack*);
+void running(unsigned char*, int,unsigned char*, st_stack*);
 int compareTo(const char*, char*);
 
-int main(int argc, char** argv)
+int main(char** argv)
 {
 	/*printf("\nBINARY VALUES\n");
 
@@ -309,13 +314,13 @@ int main(int argc, char** argv)
 	printf("\n");*/
 	FILE* fp;
 	char* buffer = NULL;// [131081];
-	char* sc;
-	char* sd;
+	unsigned char* sc;
+	unsigned char* sd;
 	//errno_t err;
 	st_stack* stack = createStack(100); //struct st_stack stack;
 	long filend;
 
-	fopen_s(&fp, "C:\\Users\\beto_\\Downloads\\zoinksForSemiTest (1).ye", "rb");
+	fopen_s(&fp, "C:\\Users\\beto_\\Downloads\\bubbleEsNuestraMobyDick.ye", "rb");
 
 	//char i = fread(buffer, 1, 11, fp);
 	fseek(fp, 0, SEEK_END);
@@ -337,17 +342,21 @@ int main(int argc, char** argv)
 	}
 
 	//st_stack stack[17];
+	unsigned char value1 = (buffer[7]);
+	unsigned char value2 = (buffer[8]);
 
-	int TSC = (int)((buffer[7]) | buffer[8]);
-	int TSD = (int)((buffer[9]) | buffer[10]);
+	int TSC = (int)((value1 << 8) | value2);
+	value1 = (buffer[9]);
+	value2 = (buffer[10]);
+	int TSD = (int)((value1 << 8) | value2);
 	//stack->dato = ((buffer[9] << 8) | buffer[10]);
-	sc = (char*)malloc(TSC * sizeof(char*));
-	sd = (char*)malloc(TSD * sizeof(char*));
+	sc = (unsigned char*)malloc(TSC * sizeof(char*));
+	sd = (unsigned char*)malloc(TSD * sizeof(char*));
 
 	for (int i = 0; i <= TSC; i++)
 	{
 		sc[i] = buffer[i + 11];
-		printf("ins\t%d\tdir%d\n", sc[i], i);
+		//printf("ins\t%d\tdir%d\n", sc[i], i);
 	}
 	/*printf("\n");
 	for (int i = 0; i < TSD; i++)
@@ -374,7 +383,7 @@ int main(int argc, char** argv)
 	/*printf("DATA SEGMENT\n");
 	for (int i = 0; i < TSD; i++)
 	{
-		printf("ins\t%d\tdir%d\n", sd[i], i);
+		printf("%d\tdir%d\n", sd[i], i);
 	}*/
 
 	
@@ -428,7 +437,7 @@ int compareTo(const char* a, char* b)
 	return 1;
 }
 
-void LeerYEscribirIntenDir(char* sd, int dir)
+void LeerYEscribirIntenDir(unsigned char* sd, int dir)
 {
 	unsigned char bytes[4];
 	unsigned int n;
@@ -463,7 +472,7 @@ void LeerYEscribirIntenDir(char* sd, int dir)
 	}*/
 }
 
-void LeerYEscribirDoubleenDir(char* sd, int dir)
+void LeerYEscribirDoubleenDir(unsigned char* sd, int dir)
 {
 	unsigned char bytes[8];
 	double n;
@@ -501,10 +510,10 @@ void LeerYEscribirDoubleenDir(char* sd, int dir)
 	}*/
 }
 
-void LeerYEscribirCharenDir(char* sd, int dir)
+void LeerYEscribirCharenDir(unsigned char* sd, int dir)
 {
 	unsigned char n;
-	scanf_s("%a", &n);
+	scanf_s("%c", &n);
 	//Get each byte value from int.
 
 
@@ -522,7 +531,7 @@ void LeerYEscribirCharenDir(char* sd, int dir)
 }
 
 
-void EscribirIntenDir(unsigned int n, char* sd, int dir)
+void EscribirIntenDir(unsigned int n, unsigned char* sd, int dir)
 {
 	unsigned char bytes[4];
 	//unsigned int n;
@@ -534,10 +543,10 @@ void EscribirIntenDir(unsigned int n, char* sd, int dir)
 
 	int Int32 = 0;
 
-	/*Int32 = (Int32 << 8) + bytes[3]; //UNCOMMENT TO DEBUG VALUE
-	Int32 = (Int32 << 8) + bytes[2];
-	Int32 = (Int32 << 8) + bytes[1];
-	Int32 = (Int32 << 8) + bytes[0];*/
+	//Int32 = (Int32 << 8) + bytes[3]; //UNCOMMENT TO DEBUG VALUE
+	//Int32 = (Int32 << 8) + bytes[2];
+	//Int32 = (Int32 << 8) + bytes[1];
+	//Int32 = (Int32 << 8) + bytes[0];
 
 	sd[dir++] = bytes[3];
 	sd[dir++] = bytes[2];
@@ -556,7 +565,7 @@ void EscribirIntenDir(unsigned int n, char* sd, int dir)
 	//}
 }
 
-void EscribirDoubleenDir(double n, char* sd, int dir)
+void EscribirDoubleenDir(double n, unsigned char* sd, int dir)
 {
 	unsigned char bytes[8];
 	//double n;
@@ -595,7 +604,7 @@ void EscribirDoubleenDir(double n, char* sd, int dir)
 	
 }
 
-void EscribirCharenDir(unsigned char n, char* sd, int dir)
+void EscribirCharenDir(unsigned char n, unsigned char* sd, int dir)
 {
 	//Get each byte value from int.
 
@@ -1361,8 +1370,9 @@ void CMPVARNE(st_stack* stack)
 	}
 }
 
-void PRTVAR(int dir, char* sd, char type)
+void PRTVAR(int dir, unsigned char* sd, char type)
 {
+
 	switch (type)
 	{
 	case 'i':
@@ -1390,7 +1400,7 @@ void PRTVAR(int dir, char* sd, char type)
 	}
 		break;
 	case 'c':
-		printf("%a", sd[dir]);
+		printf("%c", sd[dir]);
 		break;
 	case 's':
 	{
@@ -1399,7 +1409,7 @@ void PRTVAR(int dir, char* sd, char type)
 		{
 			str[i] = sd[i + dir];
 		}
-		printf("%a", str);
+		printf("%s", str);
 	}
 		break;
 	default:
@@ -1407,481 +1417,559 @@ void PRTVAR(int dir, char* sd, char type)
 	}
 }
 
-void running(char* sc, int pc, char* sd, st_stack* stack)
+void running(unsigned char* sc, int pc, unsigned char* sd, st_stack* stack)
 {
-	//printf("CURRENTLY RUNNING:\t%d\tdir %d\n", sc[pc], pc);
-	if (sc[pc] != EFE)
+	int dir = 0;
+	int valuei = 0;
+	st_node nodo;
+	double valued = 0;
+	while (sc[pc] != EFE)
 	{
-		int dir = 0;
-		int valuei = 0;
-		st_node nodo;
-		double valued = 0;
-		switch (sc[pc])//*(sc + pc))//SegmentoDeCodigo[Puntero])
+		//printf("\nCURRENTLY RUNNING:\t%d\tdir %d\n", sc[pc], pc);
+
+		if (sc[pc] != EFE)
 		{
-		case EFE:
-			break;
-		case RDI:
-			dir = (int)((sc[pc + 1] << 8) | sc[pc + 2]);
-			pc += 2;
-
-			LeerYEscribirIntenDir(sd, dir);
-			break;
-		case RDD:
-			dir = (int)((sc[pc + 1] << 8) | sc[pc + 2]);
-			pc += 2;
-
-			LeerYEscribirIntenDir(sd, dir);
-			break;
-		case RDS:
-			dir = (int)((sc[pc + 1] << 8) | sc[pc + 2]);
-			pc += 2;
-
-			LeerYEscribirIntenDir(sd, dir);
-			break;
-		case RDB:
-			dir = (int)((sc[pc + 1] << 8) | sc[pc + 2]);
-			pc += 2;
-
-			LeerYEscribirCharenDir(sd, dir);
-			break;
-		case RDC:
-			dir = (int)((sc[pc + 1] << 8) | sc[pc + 2]);
-			pc += 2;
-
-			LeerYEscribirCharenDir(sd, dir);
-			break;
-		case RDIV:
-			dir = (int)((sc[pc + 1] << 8) | sc[pc + 2]);
-			pc += 2;
-			dir += index * 4;
-			LeerYEscribirIntenDir(sd, dir);
-			break;
-		case RDDV:
-			dir = (int)((sc[pc + 1] << 8) | sc[pc + 2]);
-			pc += 2;
-			dir += index * 8;
-			LeerYEscribirDoubleenDir(sd, dir);
-			break;
-		case RDSV:
-			dir = (int)((sc[pc + 1] << 8) | sc[pc + 2]);
-			pc += 2;
-			dir += index * 256;
-			LeerYEscribirCharenDir(sd, dir);
-			break;
-		case RDBV:
-			dir = (int)((sc[pc + 1] << 8) | sc[pc + 2]);
-			pc += 2;
-			dir += index * 1;
-			LeerYEscribirCharenDir(sd, dir);
-			break;
-		case RDCV:
-			dir = (int)((sc[pc + 1] << 8) | sc[pc + 2]);
-			pc += 2;
-			dir += index * 1;
 			
-			LeerYEscribirCharenDir(sd, dir);
-			break;
-		case PRTM:
-			dir = (int)(sc[++pc]); //Aqui se usa para ver el tamaño del string
-			for (int i = 0; i <= dir; i++)
+			switch (sc[pc])//*(sc + pc))//SegmentoDeCodigo[Puntero])
 			{
-				printf("%c", (char)sc[++pc]);
-			}
-			break;
-		case PRTI:
-			dir = (int)((sc[pc + 1] << 8) | sc[pc + 2]);
-			pc += 2;
-			PRTVAR(dir, sd, 'i');
-			break;
-		case PRTD:
-			dir = (int)((sc[pc + 1] << 8) | sc[pc + 2]);
-			pc += 2;
-			PRTVAR(dir, sd, 'd');
-			break;
-		case PRTS:
-			dir = (int)((sc[pc + 1] << 8) | sc[pc + 2]);
-			pc += 2;
-			PRTVAR(dir, sd, 's');
-			break;
-		case PRTB:
-			dir = (int)((sc[pc + 1] << 8) | sc[pc + 2]);
-			pc += 2;
-			PRTVAR(dir, sd, 'c');
-			break;
-		case PRTC:
-			dir = (int)((sc[pc + 1] << 8) | sc[pc + 2]);
-			pc += 2;
-			PRTVAR(dir, sd, 'c');
-			break;
-		case PRTIV:
-			dir = (int)((sc[pc + 1] << 8) | sc[pc + 2]);
-			pc += 2;
-			dir += 4 * index;
-			PRTVAR(dir, sd, 'i');
-			break;
-		case PRTDV:
-			dir = (int)((sc[pc + 1] << 8) | sc[pc + 2]);
-			pc += 2;
-			dir += 8 * index;
-			PRTVAR(dir, sd, 'd');
-			break;
-		case PRTSV:
-			dir = (int)((sc[pc + 1] << 8) | sc[pc + 2]);
-			pc += 2;
-			dir += 255 * index;
-			PRTVAR(dir, sd, 's');
-			break;
-		case PRTBV:
-			dir = (int)((sc[pc + 1] << 8) | sc[pc + 2]);
-			pc += 2;
-			dir += index;
-			PRTVAR(dir, sd, 'c');
-			break;
-		case PRTCV:
-			dir = (int)((sc[pc + 1] << 8) | sc[pc + 2]);
-			pc += 2;
-			dir += index;
-			PRTVAR(dir, sd, 'c');
-			break;
-		case PUSHI:
-			valuei = 0;
-			dir = (int)((sc[pc + 1] << 8) | sc[pc + 2]);
-			pc += 2;
-			//value = value | sc[pc++] | sc[pc++] | sc[pc++] | sc[pc];
-			valuei = (valuei << 8) + sd[dir++];
-			valuei = (valuei << 8) + sd[dir++];
-			valuei = (valuei << 8) + sd[dir++];
-			valuei = (valuei << 8) + sd[dir];
-			nodo.tipo = 'i';
-			nodo.dato.entero = valuei;
-			push(stack, nodo);
-			break;
-		case PUSHD:
-		{
-			valued = 0;
-			dir = (int)((sc[pc + 1] << 8) | sc[pc + 2]);
-			pc += 2;
-			//pc++;
-			//value = value | sc[pc++] | sc[pc++] | sc[pc++] | sc[pc];
-			char* value = (char*)malloc(8 * sizeof(char));
-			for (int i = 0; i < 8; i++)
-			{
-				value[i] = sd[++dir];
-			}
-			memcpy(&valued, value, sizeof(double));
-			nodo.tipo = 'd';
-			nodo.dato.doble = valued;
-			push(stack, nodo);
-		}
-			break;
-		case PUSHS:
-			dir = (int)((sc[pc + 1] << 8) | sc[pc + 2]);
-			pc += 2;
-			nodo.tipo = 's';
-			nodo.dato.apuntador = (char*)malloc(255 * sizeof(char));
-			push(stack, nodo);
-			for (int i = 0; i < 255; i++)
-			{
-				nodo.dato.apuntador[i] = sd[dir++];
-			}
-			push(stack, nodo);
-			break;
-		case PUSHB:
-			dir = (int)((sc[pc + 1] << 8) | sc[pc + 2]);
-			pc += 2;
+			case EFE:
+				break;
+			case RDI:
+				dir = (unsigned int)((sc[pc + 1] << 8) | sc[pc + 2]);
+				pc += 2;
 
-			nodo.tipo = 'c';
-			nodo.dato.caracter = sd[dir];
-			push(stack, nodo);
+				LeerYEscribirIntenDir(sd, dir);
+				break;
+			case RDD:
+				dir = (unsigned int)((sc[pc + 1] << 8) | sc[pc + 2]);
+				pc += 2;
 
-			break;
-		case PUSHC:
-			dir = (int)((sc[pc + 1] << 8) | sc[pc + 2]);
-			pc += 2;
+				LeerYEscribirIntenDir(sd, dir);
+				break;
+			case RDS:
+				dir = (unsigned int)((sc[pc + 1] << 8) | sc[pc + 2]);
+				pc += 2;
 
-			nodo.tipo = 'c';
-			nodo.dato.caracter = sd[dir];
-			push(stack, nodo);
-			break;
-		case PUSHKI:
-			valuei = 0;
-			pc++;
-			//value = value | sc[pc++] | sc[pc++] | sc[pc++] | sc[pc];
-			valuei = (valuei << 8) + sc[pc++];
-			valuei = (valuei << 8) + sc[pc++];
-			valuei = (valuei << 8) + sc[pc++];
-			valuei = (valuei << 8) + sc[pc];
-			nodo.tipo = 'i';
-			nodo.dato.entero = valuei;
-			push(stack, nodo);
-			break;
-		case PUSHKD:
-		{
-			valued = 0;
-			//pc++;
-			//value = value | sc[pc++] | sc[pc++] | sc[pc++] | sc[pc];
-			char* value = (char*)malloc(8 * sizeof(char));
-			for (int i = 0; i < 8; i++)
-			{
-				value[i] = sc[++pc];
-			}
-			memcpy(&valued, value, sizeof(double));
-			nodo.tipo = 'd';
-			nodo.dato.doble = valued;
-			push(stack, nodo);
-		}
-			break;
-		case PUSHKS:
-			nodo.tipo = 's';
-			nodo.dato.apuntador = (char*)malloc(255 * sizeof(char));
-			push(stack, nodo);
-			for (int i = 0; i < 255; i++)
-			{
-				nodo.dato.apuntador[i] = sc[++pc];
-			}
-			push(stack, nodo);
-			break;
-		case PUSHKB:
-			nodo.tipo = 'c';
-			nodo.dato.caracter = sc[++pc];
-			push(stack, nodo);
-			break;
-		case PUSHKC:
-			nodo.tipo = 'c';
-			nodo.dato.caracter = sc[++pc];
-			push(stack, nodo);
-			break;
-		case POPI:
-			nodo = top(stack);
-			if (top(stack).tipo != 'i')
-			{
-				printf("NO INT AT TOP OF STACK.\n");
-			}
-			dir = (int)((sc[pc+1] << 8) | sc[pc+2]);
-			pc += 2;
-			nodo = pop(stack);
-			EscribirIntenDir(nodo.dato.entero, sd, dir);
-			break;
-		case POPD:
-			if (top(stack).tipo != 'd')
-			{
-				printf("NO DOUBLE AT TOP OF STACK.");
-			}
-			dir = (int)((sc[pc + 1] << 8) | sc[pc + 2]);
-			pc += 2;
-			nodo = pop(stack);
-			EscribirDoubleenDir(nodo.dato.doble, sd, dir);
-			break;
-		case POPS:
-			if (top(stack).tipo != 's')
-			{
-				printf("NO BOOL AT TOP OF STACK.");
-			}
+				LeerYEscribirIntenDir(sd, dir);
+				break;
+			case RDB:
+				dir = (unsigned int)((sc[pc + 1] << 8) | sc[pc + 2]);
+				pc += 2;
 
-			dir = (int)((sc[pc + 1] << 8) | sc[pc + 2]);
-			pc += 2;
-			nodo = pop(stack);
-			//EscribirIntenDir(nodo.dato.apuntador, sd, dir); //TODO: POP STRING
-			break;
-		case POPB:
-			if (top(stack).tipo != 'c')
-			{
-				printf("NO BOOL AT TOP OF STACK.");
-			}
-			dir = (int)((sc[pc + 1] << 8) | sc[pc + 2]);
-			pc += 2;
-			nodo = pop(stack);
-			EscribirCharenDir(nodo.dato.caracter, sd, dir);
-			break;
-		case POPC:
-			if (top(stack).tipo != 'c')
-			{
-				printf("NO CHAR AT TOP OF STACK.");
-			}
-			dir = (int)((sc[pc + 1] << 8) | sc[pc + 2]);
-			pc += 2;
-			nodo = pop(stack);
-			EscribirCharenDir(nodo.dato.caracter, sd, dir);
-			break;
-		case POPIV:
-			if (top(stack).tipo != 'i')
-			{
-				printf("NO INT AT TOP OF STACK.");
-			}
-			dir = (int)((sc[pc + 1] << 8) | sc[pc + 2]);
-			pc += 2;
-			dir += index * 4;
-			nodo = pop(stack);
-			EscribirIntenDir(nodo.dato.entero, sd, dir);
-			break;
-		case POPDV:
-			if (top(stack).tipo != 'd')
-			{
-				printf("NO DOUBLE AT TOP OF STACK.");
-			}
-			dir = (int)((sc[pc + 1] << 8) | sc[pc + 2]);
-			pc += 2;
-			dir += 8 * index;
-			nodo = pop(stack);
-			EscribirDoubleenDir(nodo.dato.doble, sd, dir);
-			break;
-		case POPSV:
-			if (top(stack).tipo != 's')
-			{
-				printf("NO STRING AT TOP OF STACK.");
-			}
-			dir = (int)((sc[pc + 1] << 8) | sc[pc + 2]);
-			pc += 2;
-			dir += 255 * index;
-			nodo = pop(stack);
-			//EscribirDoubleenDir(nodo.dato.doble, sd, dir);
-			break;
-		case POPBV:
-			if (top(stack).tipo != 'b')
-			{
-				printf("NO BOOL AT TOP OF STACK.");
-			}
-			dir = (int)((sc[pc + 1] << 8) | sc[pc + 2]);
-			pc += 2;
-			dir += index;
-			nodo = pop(stack);
-			EscribirCharenDir(nodo.dato.caracter, sd, dir);
-			break;
-		case POPCV:
-			if (top(stack).tipo != 'c')
-			{
-				printf("NO CHAR AT TOP OF STACK.");
-			}
-			dir = (int)((sc[pc + 1] << 8) | sc[pc + 2]);
-			pc += 2;
-			dir += index;
-			nodo = pop(stack);
-			EscribirCharenDir(nodo.dato.caracter, sd, dir);
-			break;
-		case SUM:
-			SUMVARS(stack);
-			break;
-		case SUB:
-			SUBVARS(stack);
-			break;
-		case MULT:
-			MULTVARS(stack);
-			break;
-		case DIV:
-			DIVVARS(stack);
-			break;
-		case MOD:
+				LeerYEscribirCharenDir(sd, dir);
+				break;
+			case RDC:
+				dir = (unsigned int)((sc[pc + 1] << 8) | sc[pc + 2]);
+				pc += 2;
 
-			break;
-		case AND:
-		{
-			nodo.tipo = 'c';
-			nodo.dato.caracter = pop(stack).dato.caracter & pop(stack).dato.caracter;
-			if (nodo.dato.caracter == true)
-			{
-				printf("true");
-			}
-			else if (nodo.dato.caracter == false)
-			{
-				printf("false");
-			}
-			push(stack, nodo);
-		}
-			break;
-		case OR:
-			nodo.tipo = 'c';
-			nodo.dato.caracter = pop(stack).dato.caracter | pop(stack).dato.caracter;
-			if (nodo.dato.caracter == true)
-			{
-				printf("true");
-			}
-			else if (nodo.dato.caracter == false)
-			{
-				printf("false");
-			}
-			push(stack, nodo);
-			break;
-		case XOR:
+				LeerYEscribirCharenDir(sd, dir);
+				break;
+			case RDIV:
+				dir = (unsigned int)((sc[pc + 1] << 8) | sc[pc + 2]);
+				pc += 2;
+				dir += index * 4;
+				LeerYEscribirIntenDir(sd, dir);
+				break;
+			case RDDV:
+				dir = (unsigned int)((sc[pc + 1] << 8) | sc[pc + 2]);
+				pc += 2;
+				dir += index * 8;
+				LeerYEscribirDoubleenDir(sd, dir);
+				break;
+			case RDSV:
+				dir = (unsigned int)((sc[pc + 1] << 8) | sc[pc + 2]);
+				pc += 2;
+				dir += index * 256;
+				LeerYEscribirCharenDir(sd, dir);
+				break;
+			case RDBV:
+				dir = (unsigned int)((sc[pc + 1] << 8) | sc[pc + 2]);
+				pc += 2;
+				dir += index * 1;
+				LeerYEscribirCharenDir(sd, dir);
+				break;
+			case RDCV:
+				dir = (unsigned int)((sc[pc + 1] << 8) | sc[pc + 2]);
+				pc += 2;
+				dir += index * 1;
 
-			break;
-		case MAX:
-			MAXVAR(stack);
-			break;
-		case MIN:
-			MINVAR(stack);
-			break;
-		case INCI:
-			INCVARI(stack);
-			break;
-		case INCD:
-			INCVARD(stack);
-			break;
-		case INCC:
-			INCVARC(stack);
-			break;
-		case DECI:
-			DECVARI(stack);
-			break;
-		case DECD:
-			DECVARD(stack);
-			break;
-		case DECC:
-			DECVARD(stack);
-			break;
-		case BRANCH:
-			dir = (int)((sc[pc + 1] << 8) | sc[pc + 2]);
-			pc += 2;
-			
-			pc = dir;
-			pc--;
-			break;
-		case CMPLE:
-			CMPVARLE(stack);
-			break;
-		case CMPL:
-			CMPVARL(stack);
-			break;
-		case CMPGE:
-			CMPVARGE(stack);
-			break;
-		case CMPG:
-			CMPVARG(stack);
-			break;
-		case CMPE:
-			CMPVARE(stack);
-			break;
-		case CMPNE:
-			CMPVARNE(stack);
-			break;
-		case IDX:
-			index = pop(stack).dato.entero;
-			break;
-		case BRNCHC:
-			dir = (int)((sc[pc + 1] << 8) | sc[pc + 2]);
-			pc += 2;
-			nodo = pop(stack);
-			if ((bool)nodo.dato.caracter == true)
+				LeerYEscribirCharenDir(sd, dir);
+				break;
+			case PRTM:
+				dir = (unsigned int)(sc[++pc]); //Aqui se usa para ver el tamaño del string
+				for (int i = 0; i <= dir; i++)
+				{
+					printf("%c", (char)sc[++pc]);
+				}
+				break;
+			case PRTI:
+				dir = (unsigned int)((sc[pc + 1] << 8) | sc[pc + 2]);
+				pc += 2;
+				PRTVAR(dir, sd, 'i');
+				break;
+			case PRTD:
+				dir = (unsigned int)((sc[pc + 1] << 8) | sc[pc + 2]);
+				pc += 2;
+				PRTVAR(dir, sd, 'd');
+				break;
+			case PRTS:
+				dir = (unsigned int)((sc[pc + 1] << 8) | sc[pc + 2]);
+				pc += 2;
+				PRTVAR(dir, sd, 's');
+				break;
+			case PRTB:
+				dir = (unsigned int)((sc[pc + 1] << 8) | sc[pc + 2]);
+				pc += 2;
+				PRTVAR(dir, sd, 'c');
+				break;
+			case PRTC:
+				dir = (unsigned int)((sc[pc + 1] << 8) | sc[pc + 2]);
+				pc += 2;
+				PRTVAR(dir, sd, 'c');
+				break;
+			case PRTIV:
+				dir = (unsigned int)((sc[pc + 1] << 8) | sc[pc + 2]);
+				pc += 2;
+				dir += 4 * index;
+				PRTVAR(dir, sd, 'i');
+				break;
+			case PRTDV:
+				dir = (unsigned int)((sc[pc + 1] << 8) | sc[pc + 2]);
+				pc += 2;
+				dir += 8 * index;
+				PRTVAR(dir, sd, 'd');
+				break;
+			case PRTSV:
+				dir = (unsigned int)((sc[pc + 1] << 8) | sc[pc + 2]);
+				pc += 2;
+				dir += 255 * index;
+				PRTVAR(dir, sd, 's');
+				break;
+			case PRTBV:
+				dir = (unsigned int)((sc[pc + 1] << 8) | sc[pc + 2]);
+				pc += 2;
+				dir += index;
+				PRTVAR(dir, sd, 'c');
+				break;
+			case PRTCV:
+				dir = (unsigned int)((sc[pc + 1] << 8) | sc[pc + 2]);
+				pc += 2;
+				dir += index;
+				PRTVAR(dir, sd, 'c');
+				break;
+			case PUSHI:
+				valuei = 0;
+				dir = (unsigned int)((sc[pc + 1] << 8) | sc[pc + 2]);
+				pc += 2;
+				//value = value | sc[pc++] | sc[pc++] | sc[pc++] | sc[pc];
+				valuei = (valuei << 8) + sd[dir++];
+				valuei = (valuei << 8) + sd[dir++];
+				valuei = (valuei << 8) + sd[dir++];
+				valuei = (valuei << 8) + sd[dir];
+				nodo.tipo = 'i';
+				nodo.dato.entero = valuei;
+				push(stack, nodo);
+				break;
+			case PUSHD:
 			{
+				valued = 0;
+				dir = (unsigned int)((sc[pc + 1] << 8) | sc[pc + 2]);
+				pc += 2;
+				//pc++;
+				//value = value | sc[pc++] | sc[pc++] | sc[pc++] | sc[pc];
+				char* value = (char*)malloc(8 * sizeof(char));
+				for (int i = 0; i < 8; i++)
+				{
+					value[i] = sd[++dir];
+				}
+				memcpy(&valued, value, sizeof(double));
+				nodo.tipo = 'd';
+				nodo.dato.doble = valued;
+				push(stack, nodo);
+			}
+			break;
+			case PUSHS:
+				dir = (unsigned int)((sc[pc + 1] << 8) | sc[pc + 2]);
+				pc += 2;
+				nodo.tipo = 's';
+				nodo.dato.apuntador = (char*)malloc(255 * sizeof(char));
+				push(stack, nodo);
+				for (int i = 0; i < 255; i++)
+				{
+					nodo.dato.apuntador[i] = sd[dir++];
+				}
+				push(stack, nodo);
+				break;
+			case PUSHB:
+				dir = (unsigned int)((sc[pc + 1] << 8) | sc[pc + 2]);
+				pc += 2;
+
+				nodo.tipo = 'c';
+				nodo.dato.caracter = sd[dir];
+				push(stack, nodo);
+
+				break;
+			case PUSHC:
+				dir = (unsigned int)((sc[pc + 1] << 8) | sc[pc + 2]);
+				pc += 2;
+
+				nodo.tipo = 'c';
+				nodo.dato.caracter = sd[dir];
+				push(stack, nodo);
+				break;
+			case PUSHKI:
+				valuei = 0;
+				pc++;
+				//value = value | sc[pc++] | sc[pc++] | sc[pc++] | sc[pc];
+				valuei = (valuei << 8) + sc[pc++];
+				valuei = (valuei << 8) + sc[pc++];
+				valuei = (valuei << 8) + sc[pc++];
+				valuei = (valuei << 8) + sc[pc];
+				nodo.tipo = 'i';
+				nodo.dato.entero = valuei;
+				push(stack, nodo);
+				break;
+			case PUSHKD:
+			{
+				valued = 0;
+				//pc++;
+				//value = value | sc[pc++] | sc[pc++] | sc[pc++] | sc[pc];
+				char* value = (char*)malloc(8 * sizeof(char));
+				for (int i = 0; i < 8; i++)
+				{
+					value[i] = sc[++pc];
+				}
+				memcpy(&valued, value, sizeof(double));
+				nodo.tipo = 'd';
+				nodo.dato.doble = valued;
+				push(stack, nodo);
+			}
+			break;
+			case PUSHKS:
+				nodo.tipo = 's';
+				nodo.dato.apuntador = (char*)malloc(255 * sizeof(char));
+				push(stack, nodo);
+				for (int i = 0; i < 255; i++)
+				{
+					nodo.dato.apuntador[i] = sc[++pc];
+				}
+				push(stack, nodo);
+				break;
+			case PUSHKB:
+				nodo.tipo = 'c';
+				nodo.dato.caracter = sc[++pc];
+				push(stack, nodo);
+				break;
+			case PUSHKC:
+				nodo.tipo = 'c';
+				nodo.dato.caracter = sc[++pc];
+				push(stack, nodo);
+				break;
+			case POPI:
+				nodo = top(stack);
+				if (top(stack).tipo != 'i')
+				{
+					printf("NO INT AT TOP OF STACK.\n");
+				}
+				dir = (unsigned int)((sc[pc + 1] << 8) | sc[pc + 2]);
+				pc += 2;
+				nodo = pop(stack);
+				EscribirIntenDir(nodo.dato.entero, sd, dir);
+				break;
+			case POPD:
+				if (top(stack).tipo != 'd')
+				{
+					printf("NO DOUBLE AT TOP OF STACK.");
+				}
+				dir = (unsigned int)((sc[pc + 1] << 8) | sc[pc + 2]);
+				pc += 2;
+				nodo = pop(stack);
+				EscribirDoubleenDir(nodo.dato.doble, sd, dir);
+				break;
+			case POPS:
+				if (top(stack).tipo != 's')
+				{
+					printf("NO BOOL AT TOP OF STACK.");
+				}
+
+				dir = (unsigned int)((sc[pc + 1] << 8) | sc[pc + 2]);
+				pc += 2;
+				nodo = pop(stack);
+				//EscribirIntenDir(nodo.dato.apuntador, sd, dir); //TODO: POP STRING
+				break;
+			case POPB:
+				if (top(stack).tipo != 'c')
+				{
+					printf("NO BOOL AT TOP OF STACK.");
+				}
+				dir = (unsigned int)((sc[pc + 1] << 8) | sc[pc + 2]);
+				pc += 2;
+				nodo = pop(stack);
+				EscribirCharenDir(nodo.dato.caracter, sd, dir);
+				break;
+			case POPC:
+				if (top(stack).tipo != 'c')
+				{
+					printf("NO CHAR AT TOP OF STACK.");
+				}
+				dir = (unsigned int)((sc[pc + 1] << 8) | sc[pc + 2]);
+				pc += 2;
+				nodo = pop(stack);
+				EscribirCharenDir(nodo.dato.caracter, sd, dir);
+				break;
+			case POPIV:
+				if (top(stack).tipo != 'i')
+				{
+					printf("NO INT AT TOP OF STACK.");
+				}
+				dir = (unsigned int)((sc[pc + 1] << 8) | sc[pc + 2]);
+				pc += 2;
+				dir += index * 4;
+				nodo = pop(stack);
+				EscribirIntenDir(nodo.dato.entero, sd, dir);
+				break;
+			case POPDV:
+				if (top(stack).tipo != 'd')
+				{
+					printf("NO DOUBLE AT TOP OF STACK.");
+				}
+				dir = (unsigned int)((sc[pc + 1] << 8) | sc[pc + 2]);
+				pc += 2;
+				dir += 8 * index;
+				nodo = pop(stack);
+				EscribirDoubleenDir(nodo.dato.doble, sd, dir);
+				break;
+			case POPSV:
+				if (top(stack).tipo != 's')
+				{
+					printf("NO STRING AT TOP OF STACK.");
+				}
+				dir = (unsigned int)((sc[pc + 1] << 8) | sc[pc + 2]);
+				pc += 2;
+				dir += 255 * index;
+				nodo = pop(stack);
+				//EscribirDoubleenDir(nodo.dato.doble, sd, dir);
+				break;
+			case POPBV:
+				if (top(stack).tipo != 'b')
+				{
+					printf("NO BOOL AT TOP OF STACK.");
+				}
+				dir = (unsigned int)((sc[pc + 1] << 8) | sc[pc + 2]);
+				pc += 2;
+				dir += index;
+				nodo = pop(stack);
+				EscribirCharenDir(nodo.dato.caracter, sd, dir);
+				break;
+			case POPCV:
+				if (top(stack).tipo != 'c')
+				{
+					printf("NO CHAR AT TOP OF STACK.");
+				}
+				dir = (unsigned int)((sc[pc + 1] << 8) | sc[pc + 2]);
+				pc += 2;
+				dir += index;
+				nodo = pop(stack);
+				EscribirCharenDir(nodo.dato.caracter, sd, dir);
+				break;
+			case SUM:
+				SUMVARS(stack);
+				break;
+			case SUB:
+				SUBVARS(stack);
+				break;
+			case MULT:
+				MULTVARS(stack);
+				break;
+			case DIV:
+				DIVVARS(stack);
+				break;
+			case MOD:
+
+				break;
+			case AND:
+			{
+				nodo.tipo = 'c';
+				nodo.dato.caracter = pop(stack).dato.caracter & pop(stack).dato.caracter;
+				if (nodo.dato.caracter == true)
+				{
+					printf("true");
+				}
+				else if (nodo.dato.caracter == false)
+				{
+					printf("false");
+				}
+				push(stack, nodo);
+			}
+			break;
+			case OR:
+				nodo.tipo = 'c';
+				nodo.dato.caracter = pop(stack).dato.caracter | pop(stack).dato.caracter;
+				if (nodo.dato.caracter == true)
+				{
+					printf("true");
+				}
+				else if (nodo.dato.caracter == false)
+				{
+					printf("false");
+				}
+				push(stack, nodo);
+				break;
+			case XOR:
+
+				break;
+			case MAX:
+				MAXVAR(stack);
+				break;
+			case MIN:
+				MINVAR(stack);
+				break;
+			case INCI:
+				INCVARI(stack);
+				break;
+			case INCD:
+				INCVARD(stack);
+				break;
+			case INCC:
+				INCVARC(stack);
+				break;
+			case DECI:
+				DECVARI(stack);
+				break;
+			case DECD:
+				DECVARD(stack);
+				break;
+			case DECC:
+				DECVARD(stack);
+				break;
+			case BRANCH:
+				dir = (unsigned int)((sc[pc + 1] << 8) | sc[pc + 2]);
+				pc += 2;
+
 				pc = dir;
 				pc--;
+				break;
+			case CMPLE:
+				CMPVARLE(stack);
+				break;
+			case CMPL:
+				CMPVARL(stack);
+				break;
+			case CMPGE:
+				CMPVARGE(stack);
+				break;
+			case CMPG:
+				CMPVARG(stack);
+				break;
+			case CMPE:
+				CMPVARE(stack);
+				break;
+			case CMPNE:
+				CMPVARNE(stack);
+				break;
+			case IDX:
+				index = pop(stack).dato.entero;
+				break;
+			case BRNCHC:
+			{
+				unsigned char value1 = (sc[pc + 1]);
+				unsigned char value2 = (sc[pc + 2]);
+
+				dir = (unsigned int)(value1 << 8) | value2;
+				pc += 2;
+				nodo = pop(stack);
+				if ((bool)nodo.dato.caracter == true)
+				{
+					pc = dir;
+					pc--;
+				}
+			}
+				break;
+			case PUSHIV:
+				valuei = 0;
+				dir = (unsigned int)((sc[pc + 1] << 8) | sc[pc + 2]);
+				dir += index * 4;
+				pc += 2;
+				//value = value | sc[pc++] | sc[pc++] | sc[pc++] | sc[pc];
+				valuei = (valuei << 8) + sd[dir++];
+				valuei = (valuei << 8) + sd[dir++];
+				valuei = (valuei << 8) + sd[dir++];
+				valuei = (valuei << 8) + sd[dir];
+				nodo.tipo = 'i';
+				nodo.dato.entero = valuei;
+				push(stack, nodo);
+				break;
+			case PUSHDV:
+			{
+				valued = 0;
+				dir = (unsigned int)((sc[pc + 1] << 8) | sc[pc + 2]);
+				dir += index * 8;
+
+				pc += 2;
+				//pc++;
+				//value = value | sc[pc++] | sc[pc++] | sc[pc++] | sc[pc];
+				char* value = (char*)malloc(8 * sizeof(char));
+				for (int i = 0; i < 8; i++)
+				{
+					value[i] = sd[++dir];
+				}
+				memcpy(&valued, value, sizeof(double));
+				nodo.tipo = 'd';
+				nodo.dato.doble = valued;
+				push(stack, nodo);
 			}
 			break;
+			case PUSHSV:
+				dir = (unsigned int)((sc[pc + 1] << 8) | sc[pc + 2]);
+				dir += index * 255;
 
+				pc += 2;
+				nodo.tipo = 's';
+				nodo.dato.apuntador = (char*)malloc(255 * sizeof(char));
+				push(stack, nodo);
+				for (int i = 0; i < 255; i++)
+				{
+					nodo.dato.apuntador[i] = sd[dir++];
+				}
+				push(stack, nodo);
+				break;
+			case PUSHBV:
+				dir = (unsigned int)((sc[pc + 1] << 8) | sc[pc + 2]);
+				dir += index;
 
-		default:
-			printf("UNKNOWN INS\n");
+				pc += 2;
 
-			break;
+				nodo.tipo = 'c';
+				nodo.dato.caracter = sd[dir];
+				push(stack, nodo);
+
+				break;
+			case PUSHCV:
+				dir = (unsigned int)((sc[pc + 1] << 8) | sc[pc + 2]);
+				dir += index;
+
+				pc += 2;
+
+				nodo.tipo = 'c';
+				nodo.dato.caracter = sd[dir];
+				push(stack, nodo);
+				break;
+
+			default:
+				printf("UNKNOWN INS\n");
+
+				break;
+			}
+			pc++;
+			//running(sc, pc, sd, stack);
 		}
-		pc++;
-		running(sc, pc, sd, stack);
-	}
-	else
-	{
-		/*printf("STACK CONTENT\n");
-		_stackprintEverything(stack);
-		printf("\n");*/
-		return;
-		
+		else
+		{
+			/*printf("STACK CONTENT\n");
+			_stackprintEverything(stack);
+			printf("\n");*/
+			break;
+
+		}
 	}
 }
