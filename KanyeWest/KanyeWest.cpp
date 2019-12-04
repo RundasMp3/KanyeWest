@@ -319,7 +319,7 @@ int main(int argc, char** argv)
 	//errno_t err;
 	st_stack* stack = createStack(100); //struct st_stack stack;
 	long filend;
-	fopen_s(&fp, "C:\\Users\\beto_\\Downloads\\OutputCompilador.ye", "rb");
+	fopen_s(&fp, "C:\\Users\\beto_\\Downloads\\output3.ye", "rb");
 
 	//char i = fread(buffer, 1, 11, fp);
 	fseek(fp, 0, SEEK_END);
@@ -529,7 +529,32 @@ void LeerYEscribirCharenDir(unsigned char* sd, int dir)
 	
 }
 
+void LeerYEscribirStringenDir(unsigned char* sd, int dir)
+{
+	char* n = (char*)malloc(255 * sizeof(char));
+	for (int i = 0; i < 255; i++)
+	{
+		n[i] = NULL;
+	}
+	scanf("%s", n);
+	//Get each byte value from int.
 
+
+
+	/*Int32 = (Int32 << 8) + bytes[3]; //UNCOMMENT TO DEBUG VALUE
+	Int32 = (Int32 << 8) + bytes[2];
+	Int32 = (Int32 << 8) + bytes[1];
+	Int32 = (Int32 << 8) + bytes[0];*/
+	for (int i = 0; i < 255; i++)
+	{
+
+		sd[dir++] = n[i];
+	}
+
+
+
+
+}
 void EscribirIntenDir(unsigned int n, unsigned char* sd, int dir)
 {
 	unsigned char bytes[4];
@@ -1404,7 +1429,7 @@ void PRTVAR(int dir, unsigned char* sd, char type)
 	case 's':
 	{
 		char* str = (char*)malloc(255 * sizeof(char));
-		for (int i = 0; i < 256; i++)
+		for (int i = 0; i < 255; i++)
 		{
 			str[i] = sd[i + dir];
 		}
@@ -1478,8 +1503,8 @@ void running(unsigned char* sc, int pc, unsigned char* sd, st_stack* stack)
 			case RDSV:
 				dir = (unsigned int)((sc[pc + 1] << 8) | sc[pc + 2]);
 				pc += 2;
-				dir += index * 256;
-				LeerYEscribirCharenDir(sd, dir);
+				dir += index * 255;
+				LeerYEscribirStringenDir(sd, dir);
 				break;
 			case RDBV:
 				dir = (unsigned int)((sc[pc + 1] << 8) | sc[pc + 2]);
@@ -1498,7 +1523,7 @@ void running(unsigned char* sc, int pc, unsigned char* sd, st_stack* stack)
 				dir = (unsigned int)(sc[++pc]); //Aqui se usa para ver el tamaño del string
 				for (int i = 0; i <= dir; i++)
 				{
-					printf("%c", (char)sc[++pc]);
+					printf("%c", (unsigned char)sc[++pc]);
 				}
 				break;
 			case PRTI:
